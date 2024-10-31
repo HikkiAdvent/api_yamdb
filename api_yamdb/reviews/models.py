@@ -19,7 +19,8 @@ class Review(models.Model):
     score = models.IntegerField(
         'Оценка',
         validators=[MinValueValidator(1), MaxValueValidator(10)],
-    ),
+        message='Оценка должна быть от 1 до 10.'
+    )
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True,
@@ -29,6 +30,11 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв',
         verbose_name_plural = 'Отзывы',
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'author'],
+                name='unique_review'
+            )]
 
     def __str__(self):
         return self.text
