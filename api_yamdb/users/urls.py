@@ -3,10 +3,10 @@ from .views import UserRegistrationView, TokenObtainView
 
 
 auth = [
-    path('auth/signup/', UserRegistrationView.as_view(), name='registration'),
-    path('auth/token/', TokenObtainView.as_view(), name='token'),
+    path('signup/', UserRegistrationView.as_view(), name='registration'),
+    path('token/', TokenObtainView.as_view(), name='token'),
 ]
 
 urlpatterns = [
-    path('v1/', include(auth))
+    path('auth/', include(auth))
 ]
