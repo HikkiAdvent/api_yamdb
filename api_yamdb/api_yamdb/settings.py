@@ -21,7 +21,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_simplejwt',
     'reviews.apps.ReviewsConfig',
+    'api.apps.ApiConfig',
+    'users.apps.UsersConfig',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -55,7 +60,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
-
+AUTH_USER_MODEL = 'users.MyUser'
 # Database
 
 DATABASES = {
