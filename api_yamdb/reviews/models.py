@@ -1,5 +1,26 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from users.models import MyUser
+
+
+class Title(models.Model):
+    ...
+
+    # Другие поля
+
+    rating = models.IntegerField(
+        'Рейтинг',
+        null=True,
+        blank=True,
+    )
+
+    def update_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            self.rating = int(reviews.aggregate(models.Avg('score'))['score__avg'])
+        else:
+            self.rating = None
+        self.save()
 
 
 class Review(models.Model):
@@ -10,7 +31,7 @@ class Review(models.Model):
         verbose_name='Произведение'
     )
     author = models.ForeignKey(
-        User, # Ссылка на модель User
+        MyUser,
         on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Автор'
@@ -48,7 +69,7 @@ class Comment(models.Model):
         verbose_name='Отзыв'
     )
     author = models.ForeignKey(
-        User, # Ссылка на модель User
+        MyUser,
         on_delete=models.CASCADE,
         related_name='comments',
         verbose_name='Автор'
