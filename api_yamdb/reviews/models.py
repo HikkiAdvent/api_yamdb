@@ -5,6 +5,8 @@ from django.core.validators import (
     RegexValidator
     )
 from django.db import models
+from users.models import MyUser
+from .validators import validate_year
 
 
 class Category(models.Model):
@@ -19,16 +21,15 @@ class Category(models.Model):
         max_length=50,
         verbose_name='slug',
         unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='Слаг категории содержит недопустимый символ'
-        )]
     )
 
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
         ordering = ('title',)
+
+    def __str__(self):
+        return self.title
 
 
 class Genre(models.Model):
@@ -43,16 +44,15 @@ class Genre(models.Model):
         max_length=50,
         verbose_name='slug',
         unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='Слаг жанра содержит недопустимый символ'
-        )]
     )
 
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
         ordering = ('title',)
+
+    def __str__(self):
+        return self.title
 
 
 class Title(models.Model):
@@ -65,16 +65,7 @@ class Title(models.Model):
     )
     year = models.PositiveIntegerField(
         verbose_name='год выпуска',
-        validators=[
-            MinValueValidator(
-                0,
-                message='Значение года не может быть отрицательным'
-            ),
-            MaxValueValidator(
-                int(datetime.now().year),
-                message='Значение года не может быть больше текущего'
-            )
-        ],
+        validators=[validate_year],
         db_index=True
     )
     description = models.TextField(
@@ -86,7 +77,6 @@ class Title(models.Model):
         through='GenreTitle',
         related_name='titles',
         verbose_name='жанр'
-
     )
     category = models.ForeignKey(
         Category,
@@ -101,56 +91,13 @@ class Title(models.Model):
         verbose_name_plural = 'Произведения'
         ordering = ('-year', 'title')
 
-
-class GenreTitle(models.Model):
-    """Вспомогательный класс, связывающий жанры и произведения."""
-
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.CASCADE,
-        verbose_name='Жанр'
-    )
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        verbose_name='произведение'
-    )
-
-    class Meta:
-        verbose_name = 'Соответствие жанра и произведения'
-        verbose_name_plural = 'Таблица соответствия жанров и произведений'
-        ordering = ('id',)
-
     def __str__(self):
-        return f'{self.title} принадлежит жанру/ам {self.genre}'
-=======
-from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import MyUser
-
-
-class Title(models.Model):
-    ...
-
-    # Другие поля
-
-    rating = models.IntegerField(
-        'Рейтинг',
-        null=True,
-        blank=True,
-    )
-
-    def update_rating(self):
-        reviews = self.reviews.all()
-        if reviews:
-            self.rating = int(
-                reviews.aggregate(models.Avg('score'))['score__avg'])
-        else:
-            self.rating = None
-        self.save()
+        return self.title
 
 
 class Review(models.Model):
+    """Класс отзывов."""
+
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -189,6 +136,8 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
+    """Класс комментариев."""
+
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
