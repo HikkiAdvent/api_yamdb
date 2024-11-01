@@ -17,7 +17,8 @@ class Title(models.Model):
     def update_rating(self):
         reviews = self.reviews.all()
         if reviews:
-            self.rating = int(reviews.aggregate(models.Avg('score'))['score__avg'])
+            self.rating = int(
+                reviews.aggregate(models.Avg('score'))['score__avg'])
         else:
             self.rating = None
         self.save()
@@ -25,7 +26,7 @@ class Title(models.Model):
 
 class Review(models.Model):
     title = models.ForeignKey(
-        Title, # Ссылка на модель Title
+        Title,
         on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Произведение'
