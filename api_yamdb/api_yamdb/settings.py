@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 
@@ -61,7 +62,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
 AUTH_USER_MODEL = 'users.MyUser'
+
 # Database
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 DATABASES = {
     'default': {
@@ -70,6 +86,9 @@ DATABASES = {
     }
 }
 
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+
+EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'
 
 # Password validation
 
