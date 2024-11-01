@@ -5,6 +5,7 @@ from django.core.validators import (
     RegexValidator
     )
 from django.db import models
+from users.models import MyUser
 
 
 class Category(models.Model):
@@ -96,6 +97,21 @@ class Title(models.Model):
         null=True
     )
 
+    rating = models.IntegerField(
+        'Рейтинг',
+        null=True,
+        blank=True,
+    )
+
+    def update_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            self.rating = int(
+                reviews.aggregate(models.Avg('score'))['score__avg'])
+        else:
+            self.rating = None
+        self.save()
+
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
@@ -123,31 +139,6 @@ class GenreTitle(models.Model):
 
     def __str__(self):
         return f'{self.title} принадлежит жанру/ам {self.genre}'
-=======
-from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
-from users.models import MyUser
-
-
-class Title(models.Model):
-    ...
-
-    # Другие поля
-
-    rating = models.IntegerField(
-        'Рейтинг',
-        null=True,
-        blank=True,
-    )
-
-    def update_rating(self):
-        reviews = self.reviews.all()
-        if reviews:
-            self.rating = int(
-                reviews.aggregate(models.Avg('score'))['score__avg'])
-        else:
-            self.rating = None
-        self.save()
 
 
 class Review(models.Model):
