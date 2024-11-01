@@ -86,6 +86,21 @@ class Title(models.Model):
         null=True
     )
 
+    rating = models.IntegerField(
+        'Рейтинг',
+        null=True,
+        blank=True,
+    )
+
+    def update_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            self.rating = int(
+                reviews.aggregate(models.Avg('score'))['score__avg'])
+        else:
+            self.rating = None
+        self.save()
+
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
