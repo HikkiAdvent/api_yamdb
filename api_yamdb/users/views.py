@@ -22,7 +22,7 @@ class UserRegistrationView(views.APIView):
         '''
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            user, _ = MyUser.objects.get_or_create(**serializer.validated_data)
+            user, _ = User.objects.get_or_create(**serializer.validated_data)
             code, _ = ConfirmationCode.objects.update_or_create(
                 user=user,
                 defaults={
