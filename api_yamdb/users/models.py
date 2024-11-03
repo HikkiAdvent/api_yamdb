@@ -4,8 +4,8 @@ from django.db import models
 
 class MyUser(AbstractUser):
     email = models.EmailField(unique=True, max_length=254)
-    admin = models.BooleanField(default=False)
-    moderator = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_moderator = models.BooleanField(default=False)
 
 
 class ConfirmationCode(models.Model):

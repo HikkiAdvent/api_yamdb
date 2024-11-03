@@ -31,7 +31,7 @@ class Category(models.Model):
         ordering = ('title',)
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Genre(models.Model):
@@ -54,7 +54,7 @@ class Genre(models.Model):
         ordering = ('title',)
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Title(models.Model):
@@ -69,7 +69,6 @@ class Title(models.Model):
         verbose_name='год выпуска',
         validators=[validate_year],
         db_index=True,
-        error_messages='Год выпуска не может быть в будущем.'
     )
     description = models.TextField(
         verbose_name='описание',
@@ -94,7 +93,7 @@ class Title(models.Model):
         default_related_name = 'titles'
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Review(models.Model):
@@ -103,20 +102,17 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Произведение'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Автор'
     )
     text = models.TextField()
     score = models.PositiveSmallIntegerField(
         'оценка',
         validators=[MinValueValidator(1), MaxValueValidator(10)],
-        error_message='Оценка должна быть от 1 до 10.'
     )
     pub_date = models.DateTimeField(
         'дата публикации',
@@ -132,6 +128,7 @@ class Review(models.Model):
                 fields=['title', 'author'],
                 name='unique_review'
             )]
+        default_related_name = 'reviews'
 
     def __str__(self):
         return self.text[:TEXT_LENGTH]
@@ -154,7 +151,8 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         'дата публикации',
         auto_now_add=True,
-        db_index=True
+        db_index=True,
+        blank=True
     )
 
     class Meta:

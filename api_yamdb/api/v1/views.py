@@ -1,30 +1,29 @@
-from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
+from rest_framework import generics
+from reviews.models import Category, Genre, Title, Review
 
-from reviews.models import Category, Genre, Title, Review, Comment
-
-from .permissions import (
+from api.v1.permissions import (
     AnonimReadOnly,
     IsSuperUserOrIsAdminOnly,
     ReviewCommentPermissions
-    )
-from .serializers import (
+)
+from api.v1.serializers import (
     CategorySerializer, GenreSerializer,
-    TitleGETSerializer, TitleSerializer,
-    ReviewSerializer, CommentSerializer
-    )
+    TitleSerializer, ReviewSerializer,
+    CommentSerializer
+)
 
 
-class CategoryViewSet(CreateListDestroyViewSet):
+class CategoryViewSet(generics.CreateListDestroyViewSet):
     """Вьюсет для создания обьектов класса Category."""
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
-class GenreViewSet(CreateListDestroyViewSet):
+class GenreViewSet(generics.CreateListDestroyViewSet):
     """Вьюсет для создания обьектов класса Genre."""
 
     queryset = Genre.objects.all()
@@ -35,15 +34,10 @@ class TitleViewSet(ModelViewSet):
     """Вьюсет для создания обьектов класса Title."""
 
     queryset = Title.objects.select_related('category').\
-        prefetch_related('genre').annotate(rating=Avg('reviews__score'))
+        prefetch_related('genre')
     serializer_class = TitleSerializer
     permission_classes = (AnonimReadOnly | IsSuperUserOrIsAdminOnly,)
     filter_backends = (DjangoFilterBackend,)
-
-    def get_serializer_class(self):
-        """Определяет какой сериализатор будет использоваться
-        для разных типов запроса."""
-        return TitleGETSerializer if self.request.method == 'GET' else TitleSerializer
 
 
 class ReviewViewSet(ModelViewSet):
