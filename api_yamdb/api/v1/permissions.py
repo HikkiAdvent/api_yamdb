@@ -1,58 +1,51 @@
-from rest_framework import permissions
+from rest_framework.permissions import BasePermission, SAFE_METHODS
+from users.models import Role
 
 
-class IsAdminOrModerator(permissions.BasePermission):
-    """Разрешение для администратора и модератора."""
-
-    def has_permission(self, request, view):
-        return (
-            request.user.is_authenticated
-            and (getattr(request.user, 'is_admin', False)
-                 or getattr(request.user, 'is_moderator', False))
-        )
-
-
-class AnonimReadOnly(permissions.BasePermission):
-    """Разрешает анонимному пользователю только безопасные запросы."""
-
-    def has_permission(self, request, view):
-        return request.method in permissions.SAFE_METHODS
-
-
-class IsAdminModeratorOrAuthor(permissions.BasePermission):
+class IsAdmin(BasePermission):
     """
-    Разрешение для админа, модератора или автора редактирования объектов,
-    иначе - только безопасные запросы.
+    Разрешает доступ только администраторам.
     """
+    def has_permission(self, request, view):
+        return getattr(request.user, 'role', None) == Role.ADMIN.value
+
+
+class IsModerator(BasePermission):
+    """
+    Разрешает доступ только модераторам.
+    """
+    def has_permission(self, request, view):
+        return getattr(request.user, 'role', None) == Role.MODERATOR.value
+
+
+class IsAuthor(BasePermission):
+    """
+    Разрешает доступ автору объекта или для безопасных методов.
+    """
+    def has_object_permission(self, request, view, obj):
+        return request.method in SAFE_METHODS or obj.author == request.user
+
+
+class IsAnonymousUser(BasePermission):
+    """
+    Разрешает доступ только анонимным пользователям и только к безопасным методам.
+    """
+    def has_permission(self, request, view):
+        return request.user.is_anonymous and request.method in SAFE_METHODS
+
+
+class IsAdminOrModeratorOrAuthorOrReadOnly(BasePermission):
+    """
+    Комплексная проверка для анонимов, админов, модераторов и авторов.
+    """
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS or IsAdmin().has_permission(request, view)
 
     def has_object_permission(self, request, view, obj):
-        return (
-            request.method in permissions.SAFE_METHODS
-            or request.user.is_authenticated
-            and (getattr(request.user, 'is_admin', False)
-                 or getattr(request.user, 'is_moderator', False)
-                 or obj.author == request.user)
-        )
-
-
-class ReviewCommentPermissions(permissions.BasePermission):
-    """
-    Разрешения для создания, обновления и удаления отзывов и комментариев.
-    """
-
-    def has_permission(self, request, view):
-        if request.method == 'POST':
-            return request.user.is_authenticated
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
+        if request.method in SAFE_METHODS:
             return True
         return (
-            request.user.is_authenticated
-            and (
-                request.user == obj.author
-                or getattr(request.user, 'is_moderator', False)
-                or getattr(request.user, 'is_admin', False)
-            )
+            IsAdmin().has_permission(request, view) or
+            IsModerator().has_permission(request, view) or
+            IsAuthor().has_object_permission(request, view, obj)
         )
