@@ -1,14 +1,14 @@
 from rest_framework import permissions
 
 
-class IsSuperUserOrIsAdminOnly(permissions.BasePermission):
+class IsAdminOrModerator(permissions.BasePermission):
+    """Разрешение для администратора и модератора."""
 
     def has_permission(self, request, view):
         return (
             request.user.is_authenticated
-            and (request.user.is_superuser
-                 or request.user.is_staff
-                 or request.user.is_admin)
+            and (getattr(request.user, 'is_admin', False)
+                 or getattr(request.user, 'is_moderator', False))
         )
 
 
@@ -19,17 +19,19 @@ class AnonimReadOnly(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS
 
 
-class IsSuperUserIsAdminIsModeratorIsAuthor(permissions.BasePermission):
+class IsAdminModeratorOrAuthor(permissions.BasePermission):
+    """
+    Разрешение для админа, модератора или автора редактирования объектов,
+    иначе - только безопасные запросы.
+    """
 
     def has_object_permission(self, request, view, obj):
         return (
             request.method in permissions.SAFE_METHODS
             or request.user.is_authenticated
-            and (request.user.is_superuser
-                 or request.user.is_staff
-                 or request.user.is_admin
-                 or request.user.is_moderator
-                 or request.user == obj.author)
+            and (getattr(request.user, 'is_admin', False)
+                 or getattr(request.user, 'is_moderator', False)
+                 or obj.author == request.user)
         )
 
 
@@ -37,20 +39,20 @@ class ReviewCommentPermissions(permissions.BasePermission):
     """
     Разрешения для создания, обновления и удаления отзывов и комментариев.
     """
+
     def has_permission(self, request, view):
-        if view.action == 'create':
+        if request.method == 'POST':
             return request.user.is_authenticated
         return True
 
     def has_object_permission(self, request, view, obj):
-        if view.action in ['update', 'partial_update', 'destroy']:
-            return (
-                request.user.is_authenticated
-                and (
-                    request.user == obj.author
-                    or getattr(request.user, 'is_moderator', False)
-                    or request.user.is_staff
-                    or request.user.is_superuser
-                )
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return (
+            request.user.is_authenticated
+            and (
+                request.user == obj.author
+                or getattr(request.user, 'is_moderator', False)
+                or getattr(request.user, 'is_admin', False)
             )
-        return True
+        )

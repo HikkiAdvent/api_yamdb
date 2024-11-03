@@ -5,7 +5,7 @@ from reviews.models import Category, Genre, Title, Review
 
 from api.v1.permissions import (
     AnonimReadOnly,
-    IsSuperUserOrIsAdminOnly,
+    IsAdminOrModerator,
     ReviewCommentPermissions
 )
 from api.v1.serializers import (
@@ -35,7 +35,7 @@ class TitleViewSet(ModelViewSet):
     queryset = Title.objects.select_related('category').\
         prefetch_related('genre')
     serializer_class = TitleSerializer
-    permission_classes = (AnonimReadOnly | IsSuperUserOrIsAdminOnly,)
+    permission_classes = (AnonimReadOnly | IsAdminOrModerator,)
     filter_backends = (DjangoFilterBackend,)
 
 
