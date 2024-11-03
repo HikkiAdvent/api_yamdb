@@ -1,11 +1,24 @@
+from enum import Enum
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
+class Role(Enum):
+    USER = "user"
+    MODERATOR = "moderator"
+    ADMIN = "admin"
+
+
 class MyUser(AbstractUser):
     email = models.EmailField(unique=True, max_length=254)
-    is_admin = models.BooleanField(default=False)
-    is_moderator = models.BooleanField(default=False)
+    role = models.CharField(
+        max_length=20,
+        choices=[(role.value, role.name) for role in Role],
+        default=Role.USER.value,
+        blank=True
+    )
+    bio = models.TextField(blank=True, null=True)
 
 
 class ConfirmationCode(models.Model):

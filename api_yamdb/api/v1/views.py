@@ -17,14 +17,14 @@ from api.v1.serializers import (
 
 class CategoryViewSet(ModelViewSet):
     """Вьюсет для создания обьектов класса Category."""
-
+    permission_classes = (AnonimReadOnly, )
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
 class GenreViewSet(ModelViewSet):
     """Вьюсет для создания обьектов класса Genre."""
-
+    permission_classes = (AnonimReadOnly,)
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
 

@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, validators
 from django.contrib.auth import get_user_model
 
 from users.models import ConfirmationCode
@@ -13,6 +13,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'username')
+        validators = (
+            validators.UniqueTogetherValidator(
+                queryset=User.objects.all(),
+                fields=('author', 'title',)
+            )
+        )
 
     def validate_username(self, value):
         if value.lower() == 'me':
@@ -41,3 +47,16 @@ class TokenObtainSerializer(serializers.Serializer):
             raise serializers.ValidationError("Неверный код подтверждения.")
         data['user'] = user
         return data
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'bio',
+            'role'
+        )
