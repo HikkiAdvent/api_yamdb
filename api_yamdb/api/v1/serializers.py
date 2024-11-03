@@ -1,8 +1,11 @@
 from rest_framework import serializers, validators
+from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.db import models
 from rest_framework.exceptions import ValidationError
 from reviews.models import Category, Genre, Title, Comment, Review
+
+User = get_user_model()
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -24,7 +27,9 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Title."""
     author = serializers.SlugRelatedField(
-        slug_field='username'
+        read_only=True,
+        slug_field='username',
+        default=serializers.CurrentUserDefault()
     )
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
@@ -77,12 +82,13 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     title = serializers.SlugRelatedField(
+        queryset=Title.objects.all(),
         slug_field='name',
-        read_only=True
     )
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,
+        default=serializers.CurrentUserDefault()
     )
 
     class Meta:
@@ -113,7 +119,8 @@ class ReviewSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         slug_field='username',
-        read_only=True
+        read_only=True,
+        default=serializers.CurrentUserDefault()
     )
 
     class Meta:

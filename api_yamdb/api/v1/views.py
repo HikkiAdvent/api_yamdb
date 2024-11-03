@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import generics
 from reviews.models import Category, Genre, Title, Review
 
 from api.v1.permissions import (
@@ -16,14 +15,14 @@ from api.v1.serializers import (
 )
 
 
-class CategoryViewSet(generics.CreateListDestroyViewSet):
+class CategoryViewSet(ModelViewSet):
     """Вьюсет для создания обьектов класса Category."""
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
-class GenreViewSet(generics.CreateListDestroyViewSet):
+class GenreViewSet(ModelViewSet):
     """Вьюсет для создания обьектов класса Genre."""
 
     queryset = Genre.objects.all()
