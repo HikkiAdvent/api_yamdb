@@ -1,11 +1,14 @@
-from rest_framework import permissions, status, views, response
+from rest_framework import permissions, status, views, response, viewsets
 from rest_framework_simplejwt.tokens import AccessToken
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
-from .models import ConfirmationCode, MyUser
-from .serializers import UserRegistrationSerializer, TokenObtainSerializer
+from django.contrib.auth import get_user_model
+from .models import ConfirmationCode
+from .serializers import UserRegistrationSerializer, TokenObtainSerializer, UserSerializer
 from users.uuids import generate_short_uuid
+from .permissions import AdminPermission
+User = get_user_model()
 
 
 class UserRegistrationView(views.APIView):
@@ -19,7 +22,7 @@ class UserRegistrationView(views.APIView):
         '''
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            user, _ = MyUser.objects.get_or_create(**serializer.validated_data)
+            user, _ = User.objects.get_or_create(**serializer.validated_data)
             code, _ = ConfirmationCode.objects.update_or_create(
                 user=user,
                 defaults={
@@ -38,7 +41,7 @@ class UserRegistrationView(views.APIView):
                 {
                     'message': 'Код отправлен на указанный email.'
                 },
-                status=status.HTTP_201_CREATED
+                status=status.HTTP_200_OK
             )
         return response.Response(
             serializer.errors,
@@ -63,3 +66,9 @@ class TokenObtainView(views.APIView):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    permission_classes = (AdminPermission,)
+    serializer_class = UserSerializer
