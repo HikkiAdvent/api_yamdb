@@ -1,12 +1,17 @@
+from django.contrib.auth import get_user_model
 from rest_framework.permissions import BasePermission
 
-from users.models import Role
+User = get_user_model()
 
 
 class AdminPermission(BasePermission):
-    """
+    '''
     Разрешение для доступа только для администраторов.
-    """
+    '''
 
     def has_permission(self, request, view):
-        return request.user.role == Role.ADMIN.value
+        if request.user.is_superuser:
+            return True
+        if request.user.is_authenticated:
+            return request.user.role == User.Role.ADMIN
+        return False

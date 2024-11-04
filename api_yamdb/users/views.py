@@ -1,18 +1,20 @@
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import (
-    permissions, status, views, response, generics, response
+    filters, generics, permissions, response, status, views
 )
 from rest_framework_simplejwt.tokens import AccessToken
-from django.core.mail import send_mail
-from django.conf import settings
-from django.utils import timezone
-from django.contrib.auth import get_user_model
-from .models import ConfirmationCode
-from .serializers import (
-    UserRegistrationSerializer, TokenObtainSerializer, UserSerializer
+
+from users.models import ConfirmationCode
+from users.permissions import AdminPermission
+from users.serializers import (
+    TokenObtainSerializer, UserRegistrationSerializer, UserSerializer
 )
 from users.uuids import generate_short_uuid
-from .permissions import AdminPermission
+
 User = get_user_model()
 
 
@@ -63,7 +65,7 @@ class UserRegistrationView(views.APIView):
 
 class TokenObtainView(views.APIView):
     '''Получение токена по коду'''
-    permission_classes = [permissions.AllowAny,]
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
         serializer = TokenObtainSerializer(data=request.data)
@@ -84,6 +86,8 @@ class UserListCreate(generics.ListCreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AdminPermission,)
     serializer_class = UserSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('=username',)
 
 
 class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
@@ -92,9 +96,15 @@ class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
     def get_object(self):
-        """Получение пользователя по username вместо id."""
+        '''Получение пользователя по username вместо id.'''
         username = self.kwargs.get('username')
         return get_object_or_404(User, username=username)
+
+    def put(self, request, *args, **kwargs):
+        return response.Response(
+            {'detail': 'Метод PUT не разрешен.'},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
 
 class UserRetrieveUpdate(generics.RetrieveUpdateAPIView):
@@ -106,6 +116,22 @@ class UserRetrieveUpdate(generics.RetrieveUpdateAPIView):
 
     def put(self, request, *args, **kwargs):
         return response.Response(
-            {"detail": "Метод PUT не разрешен."},
+            {'detail': 'Метод PUT не разрешен.'},
             status=status.HTTP_405_METHOD_NOT_ALLOWED
+        )
+
+    def patch(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(
+            user,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid():
+            serializer.validated_data['role'] = user.role
+            serializer.save()
+            return response.Response(serializer.data)
+        return response.Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
         )

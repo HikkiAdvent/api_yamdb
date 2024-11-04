@@ -1,7 +1,7 @@
-from django.http import Http404
-from rest_framework import serializers, validators
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
+from django.http import Http404
+from rest_framework import serializers, validators
 
 from users.models import ConfirmationCode
 
@@ -13,15 +13,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         max_length=150,
         required=True,
-        validators=[
+        validators=(
             RegexValidator(
                 regex=r'^[\w.@+-]+\Z',
                 message=(
                     'Имя пользователя может содержать'
                     ' только буквы, цифры и @/./+/-/_.'
                 )
-            )
-        ]
+            ),
+        )
     )
 
     class Meta:
@@ -40,18 +40,18 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             return data
         if User.objects.filter(username=username).exists():
             raise validators.ValidationError(
-                "Пользователь с таким именем уже существует."
+                'Пользователь с таким именем уже существует.'
             )
         if User.objects.filter(email=email).exists():
             raise validators.ValidationError(
-                "Пользователь с такой электронной почтой уже существует."
+                'Пользователь с такой электронной почтой уже существует.'
             )
         return data
 
     def validate_username(self, value):
         if value.lower() == 'me':
             raise serializers.ValidationError(
-                "Использование 'me' в качестве имени пользователя запрещено."
+                'Использование \'me\' в качестве имени пользователя запрещено.'
             )
         return value
 
@@ -69,12 +69,12 @@ class TokenObtainSerializer(serializers.Serializer):
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
-            raise Http404("Пользователь не найден.")
+            raise Http404('Пользователь не найден.')
         if not ConfirmationCode.objects.filter(
             user=user,
             code=confirmation_code
         ).exists():
-            raise serializers.ValidationError("Неверный код подтверждения.")
+            raise serializers.ValidationError('Неверный код подтверждения.')
         data['user'] = user
         return data
 

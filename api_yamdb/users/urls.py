@@ -1,6 +1,6 @@
-from django.urls import path, include
-from users import views
+from django.urls import include, path
 
+from users import views
 
 auth = [
     path('signup/', views.UserRegistrationView.as_view(), name='registration'),
@@ -8,13 +8,13 @@ auth = [
 ]
 
 users = [
-    path('', views.UserListCreate.as_view(), name='users'),
+    path('me/', views.UserRetrieveUpdate.as_view(), name='me'),
     path(
         '<username>/',
         views.UserRetrieveUpdateDestroy.as_view(),
         name='user'
     ),
-    path('me/', views.UserRetrieveUpdate.as_view(), name='me')
+    path('', views.UserListCreate.as_view(), name='users'),
 ]
 
 urlpatterns = [
