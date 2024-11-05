@@ -100,6 +100,7 @@
 ## Примеры использования эндпоинтов API:
 
 1. Регистрация пользователя
+   
     ```https
     POST /api/v1/auth/signup/
     Content-Type: application/json
@@ -112,7 +113,9 @@
         "role": "user"
     }
     ```
+
 2. Получение токена
+   
     ```https
     POST /api/v1/auth/token/
     Content-Type: application/json
@@ -121,7 +124,9 @@
         "confirmation_code": "string"
     }
     ```
+
 3. Частичное обновление информации о произведении
+   
    ```https
     PATCH api/v1/titles/{titles_id}/
     Content-Type: application/json
@@ -131,10 +136,13 @@
     }
     ```
 4. Пример поиска и фильтрации:
+
    ```bash
    GET /api/v1/titles/?genre=drama&category=movie&year=2022
    ```
+
 5. Пример поиска и фильтрации отзывов:
+
    ```bash
    GET /api/v1/titles/1/reviews/?search=great&ordering=-pub_date
    ```
