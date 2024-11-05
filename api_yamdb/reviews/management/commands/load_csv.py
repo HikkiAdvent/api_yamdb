@@ -12,7 +12,7 @@ CSV_DIR = os.path.join(settings.BASE_DIR, 'static', 'data')
 
 
 class Command(BaseCommand):
-    help = 'Fills the database with data from csv-file in static folder'
+    help: str = 'Импортирует данные из csv-файлов в базу данных'
 
     def handle(self, *args, **kwargs):
         FILE_HANDLE = (
