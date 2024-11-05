@@ -104,12 +104,12 @@
     POST /api/v1/auth/signup/
     Content-Type: application/json
     {
-    "username": "^w\\Z",
-    "email": "user@example.com",
-    "first_name": "string",
-    "last_name": "string",
-    "bio": "string",
-    "role": "user"
+        "username": "^w\\Z",
+        "email": "user@example.com",
+        "first_name": "string",
+        "last_name": "string",
+        "bio": "string",
+        "role": "user"
     }
     ```
 2. Получение токена
@@ -117,8 +117,8 @@
     POST /api/v1/auth/token/
     Content-Type: application/json
     {
-    "username": "^w\\Z",
-    "confirmation_code": "string"
+        "username": "^w\\Z",
+        "confirmation_code": "string"
     }
     ```
 3. Частичное обновление информации о произведении
@@ -126,8 +126,8 @@
     PATCH api/v1/titles/{titles_id}/
     Content-Type: application/json
     {
-    "username": "^w\\Z",
-    "confirmation_code": "string"
+        "username": "^w\\Z",
+        "confirmation_code": "string"
     }
     ```
 4. Пример поиска и фильтрации:
