@@ -74,7 +74,8 @@ class Title(models.Model):
     )
     genre = models.ManyToManyField(
         Genre,
-        verbose_name='жанр'
+        verbose_name='жанр',
+        through='GenreTitle'
     )
     category = models.ForeignKey(
         Category,
@@ -87,6 +88,7 @@ class Title(models.Model):
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
         default_related_name = 'titles'
+        ordering = ('id',)
 
     def __str__(self):
         return self.name
