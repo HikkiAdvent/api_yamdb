@@ -24,11 +24,11 @@ FILES_CLASSES = {
 }
 
 COLUMN_MAPPINGS = {
-    # 'users': {
-    #     'username': 'username', 'email': 'email',
-    #     'role': 'role', 'bio': 'bio',
-    #     'first_name': 'first_name', 'last_name': 'last_name'
-    # },
+    'users.csv': {
+        'username': 'username', 'email': 'email',
+        'role': 'role', 'bio': 'bio',
+        'first_name': 'first_name', 'last_name': 'last_name'
+    },
     'category.csv': {
         'name': 'name', 'slug': 'slug',
     },
