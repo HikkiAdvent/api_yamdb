@@ -156,7 +156,7 @@
 python manage.py test
 ```
 
-## Кон Contributors
+## Авторы
 
 - Валерий Петренко - [Ссылка на GitHub](https://github.com/HikkiAdvent)
 - Борисенко Виталий - [Ссылка на GitHub](https://github.com/bvv-praktikum)
