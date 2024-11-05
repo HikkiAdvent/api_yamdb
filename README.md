@@ -58,28 +58,28 @@
 * Регистрация нового пользователя: ```POST /api/v1/auth/signup/```
 * Получение JWT-токена: ```POST /api/v1/auth/token/```
 * Управление пользователями:
-  *```GET /api/v1/users/``` — список пользователей (для администратора).
-  *```POST /api/v1/users/``` — добавление пользователя (для администратора).
-  *```GET /api/v1/users/{username}/``` — получение данных пользователя по username.
-  *```PATCH /api/v1/users/{username}/``` — изменение данных пользователя.
-  *```DELETE /api/v1/users/{username}/``` — удаление пользователя (для администратора).
-  *```GET /api/v1/users/me/``` — данные своей учетной записи (для авторизованного пользователя).
-  *```PATCH /api/v1/users/me/``` — изменение данных своей учетной записи (для авторизованного пользователя).
+  * ```GET /api/v1/users/``` — список пользователей (для администратора).
+  * ```POST /api/v1/users/``` — добавление пользователя (для администратора).
+  * ```GET /api/v1/users/{username}/``` — получение данных пользователя по username.
+  * ```PATCH /api/v1/users/{username}/``` — изменение данных пользователя.
+  * ```DELETE /api/v1/users/{username}/``` — удаление пользователя (для администратора).
+  * ```GET /api/v1/users/me/``` — данные своей учетной записи (для авторизованного пользователя).
+  * ```PATCH /api/v1/users/me/``` — изменение данных своей учетной записи (для авторизованного пользователя).
 ### Контент: Категории, Жанры и Произведения
 
 * Категории:
-  *```GET /api/v1/categories/``` — список всех категорий.
-  *```POST /api/v1/categories/``` — добавление категории (для администратора).
-  *```DELETE /api/v1/categories/{slug}/``` — удаление категории (для администратора).
+  * ```GET /api/v1/categories/``` — список всех категорий.
+  * ```POST /api/v1/categories/``` — добавление категории (для администратора).
+  * ```DELETE /api/v1/categories/{slug}/``` — удаление категории (для администратора).
 * Жанры:
-  *```GET /api/v1/genres/``` — список всех жанров.
-  *```POST /api/v1/genres/``` — добавление жанра (для администратора).
-  *```DELETE /api/v1/genres/{slug}/``` — удаление жанра (для администратора).
+  * ```GET /api/v1/genres/``` — список всех жанров.
+  * ```POST /api/v1/genres/``` — добавление жанра (для администратора).
+  * ```DELETE /api/v1/genres/{slug}/``` — удаление жанра (для администратора).
 * Произведения:
-  *```GET /api/v1/titles/``` — список всех произведений.
-  *```POST /api/v1/titles/``` — добавление произведения (для администратора).
-  *```PATCH /api/v1/titles/{title_id}/``` — частичное обновление (для администратора).
-  *```DELETE /api/v1/titles/{title_id}/``` — удаление произведения (для администратора).
+  * ```GET /api/v1/titles/``` — список всех произведений.
+  * ```POST /api/v1/titles/``` — добавление произведения (для администратора).
+  * ```PATCH /api/v1/titles/{title_id}/``` — частичное обновление (для администратора).
+  * ```DELETE /api/v1/titles/{title_id}/``` — удаление произведения (для администратора).
 
 Пример поиска и фильтрации:
    ```bash
@@ -89,20 +89,24 @@
 ### Отзывы и Комментарии
 
 * Отзывы к произведениям:
-  *```GET /api/v1/titles/{title_id}/reviews/``` — список всех отзывов на произведение.
-  *```POST /api/v1/titles/{title_id}/reviews/``` — создание отзыва (для авторизованных пользователей).
-  *```GET /api/v1/titles/{title_id}/reviews/{review_id}/``` — получение отзыва по ID.
-  *```PATCH /api/v1/titles/{title_id}/reviews/{review_id}/``` — обновление (для автора, модератора или администратора).
-  *```DELETE /api/v1/titles/{title_id}/reviews/{review_id}/``` — удаление отзыва.
+  * ```GET /api/v1/titles/{title_id}/reviews/``` — список всех отзывов на произведение.
+  * ```POST /api/v1/titles/{title_id}/reviews/``` — создание отзыва (для авторизованных пользователей).
+  * ```GET /api/v1/titles/{title_id}/reviews/{review_id}/``` — получение отзыва по ID.
+  * ```PATCH /api/v1/titles/{title_id}/reviews/{review_id}/``` — обновление (для автора, модератора или администратора).
+  * ```DELETE /api/v1/titles/{title_id}/reviews/{review_id}/``` — удаление отзыва.
 
 * Комментарии к отзывам:
-  *```GET /api/v1/titles/{title_id}/reviews/{review_id}/comments/``` — все комментарии к отзыву.
-  *```POST /api/v1/titles/{title_id}/reviews/{review_id}/comments/``` — создание комментария (для авторизованных пользователей).
-  *```GET /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — получение комментария по ID.
-  *```PATCH /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — обновление (для автора, модератора или администратора).
-  *```DELETE /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — удаление.
+  * ```GET /api/v1/titles/{title_id}/reviews/{review_id}/comments/``` — все комментарии к отзыву.
+  * ```POST /api/v1/titles/{title_id}/reviews/{review_id}/comments/``` — создание комментария (для авторизованных пользователей).
+  * ```GET /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — получение комментария по ID.
+  * ```PATCH /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — обновление (для автора, модератора или администратора).
+  * ```DELETE /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — удаление.
 
- 
+Пример поиска и фильтрации отзывов:
+   ```bash
+   GET /api/v1/titles/1/reviews/?search=great&ordering=-pub_date
+   ```
+
 ## Тестирование
 
 Опишите, как запустить тесты:
