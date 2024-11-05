@@ -97,6 +97,7 @@
   * ```PATCH /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — обновление (для автора, модератора или администратора).
   * ```DELETE /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — удаление.
 
+
 ## Примеры использования эндпоинтов API:
 
 1. Регистрация пользователя
@@ -147,6 +148,7 @@
    GET /api/v1/titles/1/reviews/?search=great&ordering=-pub_date
    ```
 
+
 ## Тестирование
 
 Опишите, как запустить тесты:
@@ -156,6 +158,8 @@ python manage.py test
 
 ## Кон Contributors
 
-- Имя - [Ваш GitHub](https://github.com/ваш-логин)
+- Валерий Петренко - [Ваш GitHub](https://github.com/HikkiAdvent)
+- Борисенко Виталий - [Ваш GitHub](https://github.com/bvv-praktikum)
+- Чистяков Сергей - [Ваш GitHub](https://github.com/noxsir0)
 
 ## Лицензия
