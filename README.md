@@ -78,23 +78,8 @@
 * Произведения:
   * ```GET /api/v1/titles/``` — список всех произведений.
   * ```POST /api/v1/titles/``` — добавление произведения (для администратора).
-
-Пример:
-   ```bash
-  POST /api/v1/titles/{title_id}/reviews/
-  {
-  "text": "Отличный фильм!",
-  "score": 8
-  }
-  ```
-
   * ```PATCH /api/v1/titles/{title_id}/``` — частичное обновление (для администратора).
   * ```DELETE /api/v1/titles/{title_id}/``` — удаление произведения (для администратора).
-
-Пример поиска и фильтрации:
-   ```bash
-   GET /api/v1/titles/?genre=drama&category=movie&year=2022
-   ```
 
 ### Отзывы и Комментарии
 
@@ -112,7 +97,44 @@
   * ```PATCH /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — обновление (для автора, модератора или администратора).
   * ```DELETE /api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/``` — удаление.
 
-Пример поиска и фильтрации отзывов:
+## Примеры использования эндпоинтов API:
+
+1. Регистрация пользователя
+    ```https
+    POST /api/v1/auth/signup/
+    Content-Type: application/json
+    {
+    "username": "^w\\Z",
+    "email": "user@example.com",
+    "first_name": "string",
+    "last_name": "string",
+    "bio": "string",
+    "role": "user"
+    }
+    ```
+2. Получение токена
+    ```https
+    POST /api/v1/auth/token/
+    Content-Type: application/json
+    {
+    "username": "^w\\Z",
+    "confirmation_code": "string"
+    }
+    ```
+3. Частичное обновление информации о произведении
+   ```https
+    PATCH api/v1/titles/{titles_id}/
+    Content-Type: application/json
+    {
+    "username": "^w\\Z",
+    "confirmation_code": "string"
+    }
+    ```
+4. Пример поиска и фильтрации:
+   ```bash
+   GET /api/v1/titles/?genre=drama&category=movie&year=2022
+   ```
+5. Пример поиска и фильтрации отзывов:
    ```bash
    GET /api/v1/titles/1/reviews/?search=great&ordering=-pub_date
    ```
