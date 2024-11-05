@@ -15,8 +15,14 @@
    ```bash
    cd ваш-репозиторий
    ```
+3. Создайте и активируйте виртуальное окружение:
+   ```bash
+   python -m venv venv
+   source venv/Scripts/activate
+   python -m pip install --upgrade pip
+   ```
 
-3. Установите зависимости:
+4. Установите зависимости:
    ```bash
    pip install -r requirements.txt
    ```
