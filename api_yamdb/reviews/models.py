@@ -77,6 +77,7 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         verbose_name='жанр',
+        through='GenreTitle'
     )
     category = models.ForeignKey(
         Category,
@@ -93,6 +94,20 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class GenreTitle(models.Model):
+    """Вспомогательный класс, связывающий жанры и произведения."""
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.CASCADE,
+        verbose_name='Жанр'
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='произведение'
+    )
 
 
 class Review(models.Model):
@@ -128,7 +143,7 @@ class Review(models.Model):
                 name='unique_review'
             )]
         default_related_name = 'reviews'
-        ordering = ('id',)
+        ordering = ('pub_date',)
 
     def __str__(self):
         return self.text[:TEXT_LENGTH]
@@ -136,7 +151,6 @@ class Review(models.Model):
 
 class Comment(models.Model):
     """Класс комментариев."""
-
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
@@ -159,7 +173,7 @@ class Comment(models.Model):
         verbose_name = 'Комментарий',
         verbose_name_plural = 'Комментарии'
         default_related_name = 'comments'
-        ordering = ('id',)
+        ordering = ('pub_date',)
 
     def __str__(self):
         return self.text[:TEXT_LENGTH]

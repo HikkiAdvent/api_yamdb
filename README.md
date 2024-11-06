@@ -8,16 +8,16 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/ваш-логин/ваш-репозиторий.git
+   git clone https://github.com/HikkiAdvent/api_yamdb.git
    ```
    
 2. Перейдите в директорию проекта:
    ```bash
-   cd ваш-репозиторий
+   cd api_yamdb
    ```
 3. Создайте и активируйте виртуальное окружение:
    ```bash
-   python -m venv venv
+   python3 -m venv venv
    source venv/Scripts/activate
    python -m pip install --upgrade pip
    ```
@@ -106,12 +106,8 @@
     POST /api/v1/auth/signup/
     Content-Type: application/json
     {
-        "username": "^w\\Z",
+        "username": "^[\w.@+-]+\Z",
         "email": "user@example.com",
-        "first_name": "string",
-        "last_name": "string",
-        "bio": "string",
-        "role": "user"
     }
     ```
 
@@ -121,7 +117,7 @@
     POST /api/v1/auth/token/
     Content-Type: application/json
     {
-        "username": "^w\\Z",
+        "username": "^[\w.@+-]+\Z",
         "confirmation_code": "string"
     }
     ```
@@ -147,14 +143,6 @@
    ```bash
    GET /api/v1/titles/1/reviews/?search=great&ordering=-pub_date
    ```
-
-
-## Тестирование
-
-Опишите, как запустить тесты:
-```bash
-python manage.py test
-```
 
 ## Авторы
 
