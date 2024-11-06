@@ -9,6 +9,7 @@ User = get_user_model()
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Регистрация пользователей."""
     email = serializers.EmailField(max_length=254, required=True)
     username = serializers.CharField(
         max_length=150,
@@ -60,6 +61,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class TokenObtainSerializer(serializers.Serializer):
+    """Проверка токена."""
     username = serializers.CharField(max_length=150)
     confirmation_code = serializers.CharField(max_length=8)
 
@@ -80,6 +82,7 @@ class TokenObtainSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Данные пользователя."""
     class Meta:
         model = User
         fields = (

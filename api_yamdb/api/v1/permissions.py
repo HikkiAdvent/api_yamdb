@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 User = get_user_model()
 
@@ -25,6 +25,10 @@ class IsAdmin(BasePermission):
 
 
 class IsAuthor(BasePermission):
+    """
+    Разрешает доступ к редактированию только авторам, модераторам,
+    администратором или используется для безопасных методов.
+    """
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             return True

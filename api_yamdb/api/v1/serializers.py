@@ -1,8 +1,8 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.db import models
+from rest_framework import serializers
 
-from reviews.models import Category, Genre, Title, Comment, Review
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -91,7 +91,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    """Сериализатор для GET запросов Comment."""
+    """Сериализатор для GET запросов к комментариям."""
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True

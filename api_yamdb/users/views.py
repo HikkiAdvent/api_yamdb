@@ -63,7 +63,7 @@ class UserRegistrationView(views.APIView):
 
 
 class TokenObtainView(views.APIView):
-    '''Получение токена по коду'''
+    """Получение токена по коду."""
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -82,6 +82,7 @@ class TokenObtainView(views.APIView):
 
 
 class UserListCreate(generics.ListCreateAPIView):
+    """Получение списка пользователей или их создание."""
     queryset = User.objects.all()
     permission_classes = (AdminPermission,)
     serializer_class = UserSerializer
@@ -90,12 +91,12 @@ class UserListCreate(generics.ListCreateAPIView):
 
 
 class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
+    """Получение, обновление или удаление пользователя"""
     queryset = User.objects.all()
     permission_classes = (AdminPermission,)
     serializer_class = UserSerializer
 
     def get_object(self):
-        '''Получение пользователя по username вместо id.'''
         username = self.kwargs.get('username')
         return get_object_or_404(User, username=username)
 
@@ -107,6 +108,7 @@ class UserRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UserRetrieveUpdate(generics.RetrieveUpdateAPIView):
+    """Получение или обновление своего аккаунта."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
