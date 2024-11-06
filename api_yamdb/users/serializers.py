@@ -9,6 +9,7 @@ User = get_user_model()
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Регистрация пользователей."""
     email = serializers.EmailField(max_length=254, required=True)
     username = serializers.CharField(
         max_length=150,
@@ -51,7 +52,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         if value.lower() == 'me':
             raise serializers.ValidationError(
-                'Использование \'me\' в качестве имени пользователя запрещено.'
+                'Использование "me" в качестве имени пользователя запрещено.'
             )
         return value
 
@@ -60,6 +61,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class TokenObtainSerializer(serializers.Serializer):
+    """Проверка токена."""
     username = serializers.CharField(max_length=150)
     confirmation_code = serializers.CharField(max_length=8)
 
@@ -80,6 +82,7 @@ class TokenObtainSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Данные пользователя."""
     class Meta:
         model = User
         fields = (
@@ -90,3 +93,11 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'role'
         )
+
+    def update(self, instance, validated_data):
+        if not (
+            self.context['request'].user.is_superuser
+            and self.context['request'].user.role != User.Role.ADMIN
+        ):
+            validated_data.pop('role', None)
+        return super().update(instance, validated_data)
