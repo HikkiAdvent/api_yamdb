@@ -93,3 +93,11 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'role'
         )
+
+    def update(self, instance, validated_data):
+        if not (
+            self.context['request'].user.is_superuser
+            and self.context['request'].user.role != User.Role.ADMIN
+        ):
+            validated_data.pop('role', None)
+        return super().update(instance, validated_data)
