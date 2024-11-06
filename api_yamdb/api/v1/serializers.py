@@ -26,11 +26,6 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Title."""
-    author = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field='username',
-        default=serializers.CurrentUserDefault()
-    )
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
     raiting = serializers.SerializerMethodField(read_only=True)

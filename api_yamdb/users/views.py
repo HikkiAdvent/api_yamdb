@@ -19,7 +19,7 @@ User = get_user_model()
 
 
 class UserRegistrationView(views.APIView):
-    '''Регистрация новых пользователей.'''
+    """Регистрация новых пользователей."""
     permission_classes = [permissions.AllowAny,]
 
     def post(self, request, *args, **kwargs):
