@@ -10,6 +10,7 @@ User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Регистрация пользователей."""
+
     email = serializers.EmailField(max_length=254, required=True)
     username = serializers.CharField(
         max_length=150,

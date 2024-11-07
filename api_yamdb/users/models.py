@@ -4,6 +4,7 @@ from django.db import models
 
 class MyUser(AbstractUser):
     """Кастомный пользователь."""
+
     class Role(models.TextChoices):
         """Список ролей."""
         USER = 'user'
@@ -34,6 +35,7 @@ class MyUser(AbstractUser):
 
 class ConfirmationCode(models.Model):
     """Код подтверждения."""
+
     user = models.OneToOneField(
         MyUser,
         on_delete=models.CASCADE,

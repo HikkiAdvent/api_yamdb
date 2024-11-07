@@ -6,6 +6,7 @@ User = get_user_model()
 
 class AdminPermission(BasePermission):
     """Разрешение для доступа только для администраторов."""
+
     def has_permission(self, request, view):
         if request.user.is_superuser:
             return True

@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -20,6 +19,7 @@ User = get_user_model()
 
 class UserRegistrationView(views.APIView):
     """Регистрация новых пользователей."""
+
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -50,6 +50,7 @@ class UserRegistrationView(views.APIView):
 
 class TokenObtainView(views.APIView):
     """Получение токена по коду."""
+
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -69,6 +70,7 @@ class TokenObtainView(views.APIView):
 
 class UserListCreate(generics.ListCreateAPIView):
     """Получение списка пользователей или их создание."""
+
     queryset = User.objects.all()
     permission_classes = (AdminPermission,)
     serializer_class = UserSerializer
@@ -80,6 +82,7 @@ class UserRetrieveUpdateDestroy(
     NoPutAPIViewMixin, generics.RetrieveUpdateDestroyAPIView
 ):
     """Получение, обновление или удаление пользователя."""
+
     queryset = User.objects.all()
     permission_classes = (AdminPermission,)
     serializer_class = UserSerializer
@@ -91,6 +94,7 @@ class UserRetrieveUpdateDestroy(
 
 class UserRetrieveUpdate(NoPutAPIViewMixin, generics.RetrieveUpdateAPIView):
     """Получение или обновление своего аккаунта."""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
