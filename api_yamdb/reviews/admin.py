@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Avg
 
-from reviews.constants import LIST_PER_PAGE
+from reviews.constants import LIST_PER_PAGE, RATING_DECIMALS
 from reviews.models import Category, Genre, Title
 
 
@@ -71,6 +71,6 @@ class TitleAdmin(admin.ModelAdmin):
     def get_rating(self, object):
         """Вычисляет рейтинг произведения."""
         rating = object.reviews.aggregate(average_score=Avg('score'))
-        return round(rating.get('average_score'), 1)
+        return round(rating.get('average_score'), RATING_DECIMALS)
 
     get_rating.short_description = 'Рейтинг'

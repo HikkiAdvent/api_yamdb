@@ -3,6 +3,7 @@ from django.db import models
 from rest_framework import serializers
 
 from reviews.models import Category, Comment, Genre, Review, Title
+from .constants import MIN_SCORE, MAX_SCORE
 
 User = get_user_model()
 
@@ -88,8 +89,9 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         fields = ('text', 'score')
 
     def validate_score(self, value):
-        if not (1 <= value <= 10):
-            raise serializers.ValidationError('Оценка должна быть от 1 до 10.')
+        if not (MIN_SCORE <= value <= MAX_SCORE):
+            raise serializers.ValidationError(
+                f'Оценка должна быть от {MIN_SCORE} до {MAX_SCORE}.')
         return value
 
 

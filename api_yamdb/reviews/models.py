@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 from reviews.validators import validate_year
-from reviews.constants import TEXT_LENGTH
+from reviews.constants import TEXT_LENGTH, TITLE_NAME_MAX_LENGTH
 
 User = get_user_model()
 
@@ -15,7 +15,7 @@ class Category(models.Model):
     """Класс категорий."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=TITLE_NAME_MAX_LENGTH,
         verbose_name='Название',
         db_index=True
     )
