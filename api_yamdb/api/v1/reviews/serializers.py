@@ -25,6 +25,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Title для GET-запросов."""
+
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
     rating = serializers.SerializerMethodField(read_only=True)
@@ -43,6 +44,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class TitleCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания объектов Title (POST запрос)."""
+
     genre = serializers.SlugRelatedField(
         many=True,
         queryset=Genre.objects.all(),
@@ -67,6 +69,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор для GET запросов Review."""
+
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
@@ -92,6 +95,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для GET запросов к комментариям."""
+
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
