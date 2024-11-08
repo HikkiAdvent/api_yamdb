@@ -16,11 +16,17 @@
    cd api_yamdb
    ```
 3. Создайте и активируйте виртуальное окружение:
-   ```bash
-   python3 -m venv venv
-   source venv/Scripts/activate
-   python -m pip install --upgrade pip
-   ```
+   1. ```bash
+      python3 -m venv venv
+      ```
+   2. ```bash
+      # Способ активации зависит от системы
+      source venv/bin/activate # Linux
+      .venv/Script/activate # Windows
+      ```
+   3. ```bash
+      python -m pip install --upgrade pip
+      ```
 
 4. Установите зависимости:
    ```bash
@@ -149,5 +155,9 @@
 - Валерий Петренко - [Ссылка на GitHub](https://github.com/HikkiAdvent)
 - Борисенко Виталий - [Ссылка на GitHub](https://github.com/bvv-praktikum)
 - Чистяков Сергей - [Ссылка на GitHub](https://github.com/noxsir0)
+
+## Стек
+
+- **Django, DRF, JWT, SQLite3**
 
 ## Лицензия

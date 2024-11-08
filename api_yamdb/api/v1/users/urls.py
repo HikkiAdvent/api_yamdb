@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from users import views
+from api.v1.users import views
 
 auth = [
     path('signup/', views.UserRegistrationView.as_view(), name='registration'),
