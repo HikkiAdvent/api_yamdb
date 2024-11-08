@@ -7,12 +7,12 @@ from rest_framework import (
 from rest_framework_simplejwt.tokens import AccessToken
 
 from users.models import ConfirmationCode
-from users.permissions import AdminPermission
-from users.serializers import (
+from api.v1.users.permissions import AdminPermission
+from api.v1.users.serializers import (
     TokenObtainSerializer, UserRegistrationSerializer, UserSerializer
 )
-from users.uuids import generate_short_uuid, send_confirmation_code
-from users.mixins import NoPutAPIViewMixin
+from api.v1.users.uuids import generate_short_uuid, send_confirmation_code
+from api.v1.users.mixins import NoPutAPIViewMixin
 
 User = get_user_model()
 

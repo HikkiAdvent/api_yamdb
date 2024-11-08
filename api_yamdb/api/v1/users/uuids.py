@@ -3,7 +3,7 @@ import uuid
 from django.core.mail import send_mail
 from django.conf import settings
 
-from users.constants import UUID_LENGTH
+from api.v1.users.constants import UUID_LENGTH
 
 
 def generate_short_uuid() -> str:

@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from reviews.models import Category, Genre, Review, Title
 
-from api.v1 import serializers
-from api.v1.filters import TitleFilter
-from api.v1.permissions import IsAdmin, IsAuthor
+from api.v1.reviews import serializers
+from api.v1.reviews.filters import TitleFilter
+from api.v1.reviews.permissions import IsAdmin, IsAuthor
 
 
 class CategoryViewSet(ModelViewSet):
