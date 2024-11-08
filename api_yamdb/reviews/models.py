@@ -6,7 +6,14 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 from reviews.validators import validate_year
-from reviews.constants import TEXT_LENGTH, TITLE_NAME_MAX_LENGTH
+from reviews.constants import (
+    TEXT_LENGTH,
+    TITLE_NAME_LENGTH,
+    GENRE_SLUG_LENGTH,
+    CATEGORY_SLUG_LENGTH,
+    MIN_SCORE,
+    MAX_SCORE
+)
 
 User = get_user_model()
 
@@ -15,12 +22,12 @@ class Category(models.Model):
     """Класс категорий."""
 
     name = models.CharField(
-        max_length=TITLE_NAME_MAX_LENGTH,
+        max_length=TITLE_NAME_LENGTH,
         verbose_name='Название',
         db_index=True
     )
     slug = models.SlugField(
-        max_length=50,
+        max_length=CATEGORY_SLUG_LENGTH,
         verbose_name='slug',
         unique=True,
     )
@@ -38,12 +45,12 @@ class Genre(models.Model):
     """Класс жанров."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=TITLE_NAME_LENGTH,
         verbose_name='Hазвание',
         db_index=True
     )
     slug = models.SlugField(
-        max_length=50,
+        max_length=GENRE_SLUG_LENGTH,
         verbose_name='slug',
         unique=True,
     )
@@ -61,7 +68,7 @@ class Title(models.Model):
     """Класс произведений."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=TITLE_NAME_LENGTH,
         verbose_name='Hазвание',
         db_index=True
     )
@@ -127,7 +134,9 @@ class Review(models.Model):
     text = models.TextField()
     score = models.PositiveSmallIntegerField(
         'оценка',
-        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        validators=[
+            MinValueValidator(MIN_SCORE), MaxValueValidator(MAX_SCORE)
+        ],
     )
     pub_date = models.DateTimeField(
         'дата публикации',
