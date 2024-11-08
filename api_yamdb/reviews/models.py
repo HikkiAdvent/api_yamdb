@@ -1,12 +1,9 @@
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator,
-)
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from reviews.validators import validate_year
 from reviews.constants import TEXT_LENGTH
+from reviews.validators import validate_year
 
 User = get_user_model()
 
@@ -31,7 +28,7 @@ class Category(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name
+        return self.name[:TEXT_LENGTH]
 
 
 class Genre(models.Model):
@@ -54,7 +51,7 @@ class Genre(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name
+        return self.name[:TEXT_LENGTH]
 
 
 class Title(models.Model):
@@ -93,7 +90,7 @@ class Title(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name
+        return self.name[:TEXT_LENGTH]
 
 
 class GenreTitle(models.Model):
@@ -130,14 +127,13 @@ class Review(models.Model):
         validators=[MinValueValidator(1), MaxValueValidator(10)],
     )
     pub_date = models.DateTimeField(
-        'дата публикации',
         auto_now_add=True,
         db_index=True
     )
 
     class Meta:
-        verbose_name = 'Отзыв',
-        verbose_name_plural = 'Отзывы',
+        verbose_name = 'Отзыв'
+        verbose_name_plural = 'Отзывы'
         constraints = [
             models.UniqueConstraint(
                 fields=['title', 'author'],
@@ -165,14 +161,13 @@ class Comment(models.Model):
     )
     text = models.TextField()
     pub_date = models.DateTimeField(
-        'дата публикации',
         auto_now_add=True,
         db_index=True,
         blank=True
     )
 
     class Meta:
-        verbose_name = 'Комментарий',
+        verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
         default_related_name = 'comments'
         ordering = ('pub_date',)

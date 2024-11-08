@@ -1,12 +1,11 @@
 import csv
 import os
-from django.conf import settings
 from pathlib import Path
+
+from django.conf import settings
 from django.contrib.auth import get_user_model
-
 from django.core.management.base import BaseCommand
-
-from reviews.models import Category, Comment, Genre, Review, Title, GenreTitle
+from reviews.models import Category, Comment, Genre, GenreTitle, Review, Title
 
 User = get_user_model()
 
@@ -14,7 +13,7 @@ CSV_DIR = os.path.join(settings.BASE_DIR, 'static', 'data')
 
 
 class Command(BaseCommand):
-    help = 'Fills the database with data from csv-file in static folder'
+    help = "Заполняет базу данных данными из csv-файла в папке (static/data)"
 
     def handle(self, *args, **kwargs):
         FILE_HANDLE = (

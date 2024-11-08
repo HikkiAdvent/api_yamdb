@@ -1,18 +1,17 @@
+from api.v1.users.mixins import NoPutAPIViewMixin
+from api.v1.users.permissions import AdminPermission
+from api.v1.users.serializers import (TokenObtainSerializer,
+                                      UserRegistrationSerializer,
+                                      UserSerializer)
+from api.v1.users.uuids import generate_short_uuid, send_confirmation_code
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework import (
-    filters, generics, permissions, response, status, views
-)
+from rest_framework import (filters, generics, permissions, response, status,
+                            views)
 from rest_framework_simplejwt.tokens import AccessToken
 
 from users.models import ConfirmationCode
-from api.v1.users.permissions import AdminPermission
-from api.v1.users.serializers import (
-    TokenObtainSerializer, UserRegistrationSerializer, UserSerializer
-)
-from api.v1.users.uuids import generate_short_uuid, send_confirmation_code
-from api.v1.users.mixins import NoPutAPIViewMixin
 
 User = get_user_model()
 
