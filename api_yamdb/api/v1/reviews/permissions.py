@@ -8,6 +8,7 @@ class IsAdmin(BasePermission):
     """
     Разрешает доступ только администраторам или для безопасных методов.
     """
+
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             return (
@@ -29,6 +30,7 @@ class IsAuthor(BasePermission):
     Разрешает доступ к редактированию только авторам, модераторам,
     администратором или используется для безопасных методов.
     """
+
     def has_permission(self, request, view):
         if request.user.is_authenticated:
             return True

@@ -13,6 +13,7 @@ from api.v1.reviews.permissions import IsAdmin, IsAuthor
 
 class CategoryViewSet(ModelViewSet):
     """Вьюсет для работы с категориями."""
+
     permission_classes = (IsAdmin,)
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
@@ -29,6 +30,7 @@ class CategoryViewSet(ModelViewSet):
 
 class GenreViewSet(ModelViewSet):
     """Вьюсет для работы с жанрами."""
+
     permission_classes = (IsAdmin,)
     queryset = Genre.objects.all()
     serializer_class = serializers.GenreSerializer
@@ -45,6 +47,7 @@ class GenreViewSet(ModelViewSet):
 
 class TitleViewSet(ModelViewSet):
     """Вьюсет для создания и отображения объектов произведений."""
+
     queryset = Title.objects.all()
     permission_classes = (IsAdmin,)
     filter_backends = (DjangoFilterBackend,)
@@ -89,6 +92,7 @@ class TitleViewSet(ModelViewSet):
 
 class ReviewViewSet(ModelViewSet):
     """Вьюсет для создания, обновления и получения отзывов."""
+
     permission_classes = (IsAuthor,)
     http_method_names = ['get', 'post', 'head', 'options', 'patch', 'delete']
 
@@ -142,6 +146,7 @@ class ReviewViewSet(ModelViewSet):
 
 class CommentViewSet(ModelViewSet):
     """Вьюсет для создания, обновления и получения Comment."""
+
     permission_classes = (IsAuthor,)
     http_method_names = ['get', 'post', 'head', 'options', 'patch', 'delete']
 

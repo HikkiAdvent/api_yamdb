@@ -98,6 +98,7 @@ class Title(models.Model):
 
 class GenreTitle(models.Model):
     """Вспомогательный класс, связывающий жанры и произведения."""
+
     genre = models.ForeignKey(
         Genre,
         on_delete=models.CASCADE,
@@ -151,6 +152,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     """Класс комментариев."""
+
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
