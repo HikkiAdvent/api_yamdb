@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from .constants import EMAIL_LENGTH, ROLE_LENGTH, CONFIRMATION_CODE_LENGTH
+
 
 class MyUser(AbstractUser):
     """Кастомный пользователь."""
@@ -13,11 +15,11 @@ class MyUser(AbstractUser):
 
     email = models.EmailField(
         unique=True,
-        max_length=254,
+        max_length=EMAIL_LENGTH,
         verbose_name='почта'
     )
     role = models.CharField(
-        max_length=20,
+        max_length=ROLE_LENGTH,
         choices=[(role.value, role.name) for role in Role],
         default=Role.USER.value,
         blank=True,
@@ -42,7 +44,7 @@ class ConfirmationCode(models.Model):
         related_name='confirmation_code'
     )
     code = models.CharField(
-        max_length=8,
+        max_length=CONFIRMATION_CODE_LENGTH,
         unique=True,
         verbose_name='код'
     )
