@@ -124,7 +124,10 @@ class Review(models.Model):
     text = models.TextField()
     score = models.PositiveSmallIntegerField(
         'оценка',
-        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        validators=[
+            MinValueValidator(1, message="Оценка должна быть не меньше 1."),
+            MaxValueValidator(10, message="Оценка должна быть не больше 10.")
+        ],
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -138,7 +141,8 @@ class Review(models.Model):
             models.UniqueConstraint(
                 fields=['title', 'author'],
                 name='unique_review'
-            )]
+            )
+        ]
         default_related_name = 'reviews'
         ordering = ('pub_date',)
 
