@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from rest_framework import serializers
 
+from api.v1.reviews.constants import MAX_SCORE_VALUE, MIN_SCORE_VALUE
 from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
@@ -25,6 +26,7 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Title для GET-запросов."""
+
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
     rating = serializers.SerializerMethodField(read_only=True)
@@ -43,6 +45,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class TitleCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания объектов Title (POST запрос)."""
+
     genre = serializers.SlugRelatedField(
         many=True,
         queryset=Genre.objects.all(),
@@ -67,6 +70,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор для GET запросов Review."""
+
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True
@@ -85,13 +89,14 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         fields = ('text', 'score')
 
     def validate_score(self, value):
-        if not (1 <= value <= 10):
+        if not (MIN_SCORE_VALUE <= value <= MAX_SCORE_VALUE):
             raise serializers.ValidationError('Оценка должна быть от 1 до 10.')
         return value
 
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для GET запросов к комментариям."""
+
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True

@@ -7,19 +7,20 @@ from rest_framework import (
 )
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api.v1.users.uuids import generate_short_uuid, send_confirmation_code
+from api.v1.users.mixins import NoPutAPIViewMixin
+from api.v1.users.permissions import AdminPermission
+from api.v1.users.serializers import (TokenObtainSerializer,
+                                      UserRegistrationSerializer,
+                                      UserSerializer)
 from users.models import ConfirmationCode
-from users.permissions import AdminPermission
-from users.serializers import (
-    TokenObtainSerializer, UserRegistrationSerializer, UserSerializer
-)
-from users.uuids import generate_short_uuid, send_confirmation_code
-from users.mixins import NoPutAPIViewMixin
 
 User = get_user_model()
 
 
 class UserRegistrationView(views.APIView):
     """Регистрация новых пользователей."""
+
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -50,6 +51,7 @@ class UserRegistrationView(views.APIView):
 
 class TokenObtainView(views.APIView):
     """Получение токена по коду."""
+
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
@@ -69,6 +71,7 @@ class TokenObtainView(views.APIView):
 
 class UserListCreate(generics.ListCreateAPIView):
     """Получение списка пользователей или их создание."""
+
     queryset = User.objects.all()
     permission_classes = (AdminPermission,)
     serializer_class = UserSerializer
@@ -80,6 +83,7 @@ class UserRetrieveUpdateDestroy(
     NoPutAPIViewMixin, generics.RetrieveUpdateDestroyAPIView
 ):
     """Получение, обновление или удаление пользователя."""
+
     queryset = User.objects.all()
     permission_classes = (AdminPermission,)
     serializer_class = UserSerializer
@@ -91,6 +95,7 @@ class UserRetrieveUpdateDestroy(
 
 class UserRetrieveUpdate(NoPutAPIViewMixin, generics.RetrieveUpdateAPIView):
     """Получение или обновление своего аккаунта."""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

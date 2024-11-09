@@ -3,6 +3,7 @@ from django.core.validators import RegexValidator
 from django.http import Http404
 from rest_framework import serializers, validators
 
+from api.v1.users.constants import EMAIL_LENGTH, USERNAME_LENGTH
 from users.models import ConfirmationCode
 
 User = get_user_model()
@@ -10,9 +11,10 @@ User = get_user_model()
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """Регистрация пользователей."""
-    email = serializers.EmailField(max_length=254, required=True)
+
+    email = serializers.EmailField(max_length=EMAIL_LENGTH, required=True)
     username = serializers.CharField(
-        max_length=150,
+        max_length=USERNAME_LENGTH,
         required=True,
         validators=(
             RegexValidator(
@@ -62,6 +64,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 class TokenObtainSerializer(serializers.Serializer):
     """Проверка токена."""
+
     username = serializers.CharField(max_length=150)
     confirmation_code = serializers.CharField(max_length=8)
 
@@ -83,6 +86,7 @@ class TokenObtainSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """Данные пользователя."""
+
     class Meta:
         model = User
         fields = (

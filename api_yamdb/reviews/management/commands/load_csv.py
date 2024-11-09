@@ -1,12 +1,14 @@
 import csv
 import os
-from django.conf import settings
 from pathlib import Path
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from reviews.models import Category, Comment, Genre, Review, Title, GenreTitle
-from users.models import MyUser
+from reviews.models import Category, Comment, Genre, Review, Title
+
+User = get_user_model()
 
 CSV_DIR = os.path.join(settings.BASE_DIR, 'static', 'data')
 
@@ -18,9 +20,9 @@ class Command(BaseCommand):
         FILE_HANDLE = (
             ('category.csv', Category, {}),
             ('genre.csv', Genre, {}),
-            ('users.csv', MyUser, {}),
+            ('users.csv', User, {}),
             ('titles.csv', Title, {'category': 'category_id'}),
-            ('genre_title.csv', GenreTitle, {}),
+            ('genre_title.csv', Title.genre.through, {}),
             ('review.csv', Review, {'author': 'author_id'}),
             ('comments.csv', Comment, {'author': 'author_id'}),
         )
