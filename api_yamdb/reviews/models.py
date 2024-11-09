@@ -1,12 +1,9 @@
-from django.core.validators import (
-    MaxValueValidator,
-    MinValueValidator,
-)
 from django.contrib.auth import get_user_model
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from reviews.constants import NAME_LENGTH, RETURN_TEXT_LENGTH
 from reviews.validators import validate_year
-from reviews.constants import TEXT_LENGTH
 
 User = get_user_model()
 
@@ -15,12 +12,11 @@ class Category(models.Model):
     """Класс категорий."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=NAME_LENGTH,
         verbose_name='Название',
         db_index=True
     )
     slug = models.SlugField(
-        max_length=50,
         verbose_name='slug',
         unique=True,
     )
@@ -31,19 +27,18 @@ class Category(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name
+        return self.name[:RETURN_TEXT_LENGTH]
 
 
 class Genre(models.Model):
     """Класс жанров."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=NAME_LENGTH,
         verbose_name='Hазвание',
         db_index=True
     )
     slug = models.SlugField(
-        max_length=50,
         verbose_name='slug',
         unique=True,
     )
@@ -54,14 +49,14 @@ class Genre(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name
+        return self.name[:RETURN_TEXT_LENGTH]
 
 
 class Title(models.Model):
     """Класс произведений."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=NAME_LENGTH,
         verbose_name='Hазвание',
         db_index=True
     )
@@ -77,7 +72,6 @@ class Title(models.Model):
     genre = models.ManyToManyField(
         Genre,
         verbose_name='жанр',
-        through='GenreTitle'
     )
     category = models.ForeignKey(
         Category,
@@ -93,22 +87,7 @@ class Title(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name
-
-
-class GenreTitle(models.Model):
-    """Вспомогательный класс, связывающий жанры и произведения."""
-
-    genre = models.ForeignKey(
-        Genre,
-        on_delete=models.CASCADE,
-        verbose_name='Жанр'
-    )
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        verbose_name='произведение'
-    )
+        return self.name[:RETURN_TEXT_LENGTH]
 
 
 class Review(models.Model):
@@ -127,7 +106,16 @@ class Review(models.Model):
     text = models.TextField()
     score = models.PositiveSmallIntegerField(
         'оценка',
-        validators=[MinValueValidator(1), MaxValueValidator(10)],
+        validators=(
+            MinValueValidator(
+                1,
+                message='Оценка должна быть не меньше 1'
+            ),
+            MaxValueValidator(
+                10,
+                message='Оцена должна быть не больше 10'
+            )
+        ),
     )
     pub_date = models.DateTimeField(
         'дата публикации',
@@ -142,12 +130,15 @@ class Review(models.Model):
             models.UniqueConstraint(
                 fields=['title', 'author'],
                 name='unique_review'
-            )]
+            )
+        ]
         default_related_name = 'reviews'
         ordering = ('pub_date',)
 
     def __str__(self):
-        return self.text[:TEXT_LENGTH]
+        return (
+            f'{self.author.username}: {self.title.name[:RETURN_TEXT_LENGTH]}'
+        )
 
 
 class Comment(models.Model):
@@ -178,4 +169,6 @@ class Comment(models.Model):
         ordering = ('pub_date',)
 
     def __str__(self):
-        return self.text[:TEXT_LENGTH]
+        return (
+            f'{self.author.username}: {self.text[:RETURN_TEXT_LENGTH]}'
+        )
