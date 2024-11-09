@@ -1,9 +1,9 @@
 import csv
 import os
-from django.conf import settings
 from pathlib import Path
-from django.contrib.auth import get_user_model
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from reviews.models import Category, Comment, Genre, Review, Title
