@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from users.constants import ROLE_LENGTH
 
@@ -8,10 +9,10 @@ class MyUser(AbstractUser):
     """Кастомный пользователь."""
 
     class Role(models.TextChoices):
-        """Список ролей."""
-        USER = 'user'
-        MODERATOR = 'moderator'
-        ADMIN = 'admin'
+        """Список ролей пользователя с читаемыми названиями."""
+        USER = "user", _("User")
+        MODERATOR = "moderator", _("Moderator")
+        ADMIN = "admin", _("Admin")
 
     email = models.EmailField(
         unique=True,
@@ -19,7 +20,7 @@ class MyUser(AbstractUser):
     )
     role = models.CharField(
         max_length=ROLE_LENGTH,
-        choices=[(role.value, role.name) for role in Role],
+        choices=Role.choices,
         default=Role.USER.value,
         blank=True,
         verbose_name='роль'
