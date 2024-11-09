@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from users.constants import ROLE_LENGTH
+
 
 class MyUser(AbstractUser):
     """Кастомный пользователь."""
@@ -13,11 +15,10 @@ class MyUser(AbstractUser):
 
     email = models.EmailField(
         unique=True,
-        max_length=254,
         verbose_name='почта'
     )
     role = models.CharField(
-        max_length=20,
+        max_length=ROLE_LENGTH,
         choices=[(role.value, role.name) for role in Role],
         default=Role.USER.value,
         blank=True,

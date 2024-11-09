@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 
 from django.core.management.base import BaseCommand
 
-from reviews.models import Category, Comment, Genre, Review, Title, GenreTitle
+from reviews.models import Category, Comment, Genre, Review, Title
 
 User = get_user_model()
 
@@ -22,7 +22,7 @@ class Command(BaseCommand):
             ('genre.csv', Genre, {}),
             ('users.csv', User, {}),
             ('titles.csv', Title, {'category': 'category_id'}),
-            ('genre_title.csv', GenreTitle, {}),
+            ('genre_title.csv', Title.genre.through, {}),
             ('review.csv', Review, {'author': 'author_id'}),
             ('comments.csv', Comment, {'author': 'author_id'}),
         )
