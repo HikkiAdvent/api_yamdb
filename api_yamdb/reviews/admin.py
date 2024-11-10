@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import Avg
 
 from reviews.constants import LIST_PER_PAGE
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Comment, Review
 
 
 @admin.register(Category)
@@ -71,3 +71,37 @@ class TitleAdmin(admin.ModelAdmin):
         """Вычисляет рейтинг произведения."""
         rating = object.reviews.aggregate(average_score=Avg('score'))
         return round(rating.get('average_score'), 1)
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    """Класс настройки раздела отзывы."""
+
+    list_display = (
+        'id',
+        'title',
+        'author',
+        'score',
+        'pub_date',
+    )
+    list_filter = ('author',)
+    empty_value_display = 'значение отсутствует'
+    list_per_page = LIST_PER_PAGE
+    search_fields = ('author',)
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    """Класс настройки раздела комментарий."""
+
+    list_display = (
+        'id',
+        'review',
+        'author',
+        'text',
+        'pub_date',
+    )
+    list_filter = ('author',)
+    empty_value_display = 'значение отсутствует'
+    list_per_page = LIST_PER_PAGE
+    search_fields = ('author',)

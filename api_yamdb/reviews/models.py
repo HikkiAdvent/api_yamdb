@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from reviews.constants import NAME_LENGTH, RETURN_TEXT_LENGTH
+from reviews.constants import NAME_LENGTH, LENGTH_TEXT
 from reviews.validators import validate_year
 
 User = get_user_model()
@@ -27,7 +27,7 @@ class Category(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name[:RETURN_TEXT_LENGTH]
+        return self.name[:LENGTH_TEXT]
 
 
 class Genre(models.Model):
@@ -49,7 +49,7 @@ class Genre(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name[:RETURN_TEXT_LENGTH]
+        return self.name[:LENGTH_TEXT]
 
 
 class Title(models.Model):
@@ -87,7 +87,7 @@ class Title(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name[:RETURN_TEXT_LENGTH]
+        return self.name[:LENGTH_TEXT]
 
 
 class Review(models.Model):
@@ -125,7 +125,7 @@ class Review(models.Model):
 
     class Meta:
         verbose_name = 'Отзыв',
-        verbose_name_plural = 'Отзывы',
+        verbose_name_plural = 'Отзывы'
         constraints = [
             models.UniqueConstraint(
                 fields=['title', 'author'],
@@ -133,11 +133,11 @@ class Review(models.Model):
             )
         ]
         default_related_name = 'reviews'
-        ordering = ('pub_date',)
+        ordering = ('-pub_date',)
 
     def __str__(self):
         return (
-            f'{self.author.username}: {self.title.name[:RETURN_TEXT_LENGTH]}'
+            f'{self.author.username}: {self.title.name[:LENGTH_TEXT]}'
         )
 
 
@@ -170,5 +170,5 @@ class Comment(models.Model):
 
     def __str__(self):
         return (
-            f'{self.author.username}: {self.text[:RETURN_TEXT_LENGTH]}'
+            f'{self.author.username}: {self.text[:LENGTH_TEXT]}'
         )

@@ -40,7 +40,7 @@ class TitleSerializer(serializers.ModelSerializer):
         if not reviews.exists():
             return None
         rating = reviews.aggregate(models.Avg('score'))
-        return rating['score__avg']
+        return round(rating['score__avg'], 1)
 
 
 class TitleCreateSerializer(serializers.ModelSerializer):
