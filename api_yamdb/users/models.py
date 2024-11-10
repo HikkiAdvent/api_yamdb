@@ -22,17 +22,18 @@ class MyUser(AbstractUser):
         max_length=ROLE_LENGTH,
         choices=Role.choices,
         default=Role.USER.value,
-        blank=True,
         verbose_name='роль'
     )
     bio = models.TextField(
         blank=True,
-        null=True,
+        default='',
         verbose_name='биография'
     )
 
     class Meta:
         ordering = ('id',)
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
 
 class ConfirmationCode(models.Model):
