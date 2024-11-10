@@ -1,3 +1,4 @@
+from django.db.models import Avg
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -53,6 +54,12 @@ class TitleViewSet(ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
     http_method_names = ['get', 'post', 'head', 'options', 'patch', 'delete']
+
+    def get_queryset(self):
+        return (
+            Title.objects.annotate(rating=Avg('reviews__score',))
+            .order_by('id',)
+        )
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
