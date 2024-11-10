@@ -34,6 +34,20 @@ class MyUser(AbstractUser):
     class Meta:
         ordering = ('id',)
 
+    @property
+    def is_moderator_or_admin(self) -> bool:
+        return (
+            self.role in {self.Role.MODERATOR, self.Role.ADMIN}
+            or self.is_superuser
+        )
+
+    @property
+    def is_admin(self) -> bool:
+        return (
+            self.role == self.Role.ADMIN
+            or self.is_superuser
+        )
+
 
 class ConfirmationCode(models.Model):
     """Код подтверждения."""

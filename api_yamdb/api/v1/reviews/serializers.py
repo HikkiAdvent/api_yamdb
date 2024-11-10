@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.db import models
 from rest_framework import serializers
 
 from api.v1.reviews.constants import MAX_SCORE_VALUE, MIN_SCORE_VALUE
