@@ -1,18 +1,22 @@
-from django.db.models import Avg, QuerySet
-from django.http import HttpResponseNotAllowed
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import exceptions, filters, status
-from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import exceptions, filters
+from rest_framework import mixins, viewsets
 
 from api.v1.reviews import serializers
+from api.v1.reviews.mixins import PatchModelMixin
 from api.v1.reviews.filters import TitleFilter
 from api.v1.reviews.permissions import IsAdmin, IsAuthor
 from reviews.models import Category, Genre, Review, Title
 
 
-class CategoryViewSet(ModelViewSet):
+class CategoryViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     """Вьюсет для работы с категориями."""
 
     permission_classes = (IsAdmin,)
@@ -22,14 +26,13 @@ class CategoryViewSet(ModelViewSet):
     search_fields = ('name',)
     lookup_field = 'slug'
 
-    def retrieve(self, request, *args, **kwargs):
-        return HttpResponseNotAllowed(['POST', 'DELETE'])
 
-    def partial_update(self, request, *args, **kwargs):
-        return HttpResponseNotAllowed(['POST', 'DELETE'])
-
-
-class GenreViewSet(ModelViewSet):
+class GenreViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     """Вьюсет для работы с жанрами."""
 
     permission_classes = (IsAdmin,)
@@ -39,63 +42,45 @@ class GenreViewSet(ModelViewSet):
     search_fields = ('name',)
     lookup_field = 'slug'
 
-    def retrieve(self, request, *args, **kwargs):
-        return HttpResponseNotAllowed(['POST', 'DELETE'])
 
-    def partial_update(self, request, *args, **kwargs):
-        return HttpResponseNotAllowed(['POST', 'DELETE'])
-
-
-class TitleViewSet(ModelViewSet):
+class TitleViewSet(
+    PatchModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     """Вьюсет для создания и отображения объектов произведений."""
 
     queryset = Title.objects.all()
     permission_classes = (IsAdmin,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
-    http_method_names = ['get', 'post', 'head', 'options', 'patch', 'delete']
+
+    def get_queryset(self):
+        return (
+            Title.objects.annotate(rating=Avg('reviews__score',))
+            .order_by('id',)
+        )
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return serializers.TitleSerializer
         return serializers.TitleCreateSerializer
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        title = serializer.save()
-        response_serializer = serializers.TitleSerializer(
-            title,
-            context={'request': request}
-        )
-        return Response(
-            response_serializer.data,
-            status=status.HTTP_201_CREATED
-        )
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance,
-            data=request.data, partial=partial
-        )
-        serializer.is_valid(
-            raise_exception=True
-        )
-        title = serializer.save()
-        response_serializer = serializers.TitleSerializer(
-            title,
-            context={'request': request}
-        )
-        return Response(response_serializer.data)
-
-
-class ReviewViewSet(ModelViewSet):
+class ReviewViewSet(
+    PatchModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     """Вьюсет для создания, обновления и получения отзывов."""
 
     permission_classes = (IsAuthor,)
-    http_method_names = ['get', 'post', 'head', 'options', 'patch', 'delete']
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -114,42 +99,20 @@ class ReviewViewSet(ModelViewSet):
             raise exceptions.ValidationError(
                 'Вы уже оставили отзыв на это произведение.'
             )
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        review = serializer.save(
-            author=self.request.user,
-            title=get_object_or_404(Title, id=self.kwargs['title_id'])
-        )
-        response_serializer = serializers.ReviewSerializer(
-            review, context={'request': request}
-        )
-        return Response(
-            response_serializer.data,
-            status=status.HTTP_201_CREATED
-        )
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance,
-            data=request.data, partial=partial
-        )
-        serializer.is_valid(raise_exception=True)
-        review = serializer.save()
-
-        response_serializer = serializers.ReviewSerializer(
-            review,
-            context={'request': request}
-        )
-        return Response(response_serializer.data)
+        return super().create(request, *args, **kwargs)
 
 
-class CommentViewSet(ModelViewSet):
+class CommentViewSet(
+    PatchModelMixin,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     """Вьюсет для создания, обновления и получения Comment."""
 
     permission_classes = (IsAuthor,)
-    http_method_names = ['get', 'post', 'head', 'options', 'patch', 'delete']
 
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
@@ -159,34 +122,3 @@ class CommentViewSet(ModelViewSet):
         if self.request.method == 'GET':
             return serializers.CommentSerializer
         return serializers.CommentCreateSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        comment = serializer.save(
-            author=self.request.user,
-            review=get_object_or_404(Review, id=self.kwargs['review_id'])
-        )
-        response_serializer = serializers.CommentSerializer(
-            comment,
-            context={'request': request}
-        )
-        return Response(
-            response_serializer.data,
-            status=status.HTTP_201_CREATED
-        )
-
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance,
-            data=request.data, partial=partial
-        )
-        serializer.is_valid(raise_exception=True)
-        comment = serializer.save()
-        response_serializer = serializers.CommentSerializer(
-            comment,
-            context={'request': request}
-        )
-        return Response(response_serializer.data)

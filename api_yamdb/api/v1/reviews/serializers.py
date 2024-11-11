@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.v1.reviews.constants import MAX_SCORE_VALUE, MIN_SCORE_VALUE
@@ -29,18 +29,11 @@ class TitleSerializer(serializers.ModelSerializer):
 
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
-    rating = serializers.SerializerMethodField(read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
         fields = '__all__'
-
-    def get_rating(self, obj):
-        reviews = obj.reviews.all()
-        if not reviews.exists():
-            return None
-        rating = reviews.aggregate(models.Avg('score'))
-        return round(rating['score__avg'], 1)
 
 
 class TitleCreateSerializer(serializers.ModelSerializer):
@@ -58,14 +51,7 @@ class TitleCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('name', 'year', 'description', 'genre', 'category')
-
-    def create(self, validated_data):
-        genres_data = validated_data.pop('genre')
-        category = validated_data.pop('category')
-        title = Title.objects.create(**validated_data, category=category)
-        title.genre.set(genres_data)
-        return title
+        fields = '__all__'
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -73,7 +59,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         slug_field='username',
-        read_only=True
+        read_only=True,
     )
 
     class Meta:
@@ -92,6 +78,17 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
         if not (MIN_SCORE_VALUE <= value <= MAX_SCORE_VALUE):
             raise serializers.ValidationError('Оценка должна быть от 1 до 10.')
         return value
+
+    def create(self, validated_data):
+        validated_data['author'] = self.context.get('request').user
+        validated_data['title'] = get_object_or_404(
+            Title,
+            id=self.context['view'].kwargs['title_id']
+        )
+        return super().create(validated_data)
+
+    def to_representation(self, instance):
+        return ReviewSerializer(instance, context=self.context).data
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -113,3 +110,14 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('text',)
+
+    def create(self, validated_data):
+        validated_data['author'] = self.context.get('request').user
+        validated_data['review'] = get_object_or_404(
+            Review,
+            id=self.context['view'].kwargs['review_id']
+        )
+        return super().create(validated_data)
+
+    def to_representation(self, instance):
+        return CommentSerializer(instance, context=self.context).data
