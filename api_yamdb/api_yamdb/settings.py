@@ -1,11 +1,15 @@
+import os
 from datetime import timedelta
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs'
-DEBUG = True
-ALLOWED_HOSTS = []
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = False
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -60,7 +64,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
@@ -68,7 +71,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5,
 }
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=365),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
