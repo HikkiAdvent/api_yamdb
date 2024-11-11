@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 
 from users.constants import ROLE_LENGTH
 
@@ -10,6 +11,7 @@ class MyUser(AbstractUser):
 
     class Role(models.TextChoices):
         """Список ролей пользователя с читаемыми названиями."""
+
         USER = "user", _("User")
         MODERATOR = "moderator", _("Moderator")
         ADMIN = "admin", _("Admin")
@@ -22,17 +24,29 @@ class MyUser(AbstractUser):
         max_length=ROLE_LENGTH,
         choices=Role.choices,
         default=Role.USER.value,
-        blank=True,
         verbose_name='роль'
     )
     bio = models.TextField(
         blank=True,
-        null=True,
+        default='',
         verbose_name='биография'
     )
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'password']
 
     class Meta:
         ordering = ('id',)
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
+
+    def clean(self) -> None:
+        if self.username == 'me':
+            raise ValidationError('Имя пользователя не может быть "me"')
+        return super().clean()
 
 
 class ConfirmationCode(models.Model):
