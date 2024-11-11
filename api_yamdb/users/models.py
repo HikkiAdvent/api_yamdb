@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 
 from users.constants import ROLE_LENGTH
 
@@ -32,16 +32,12 @@ class MyUser(AbstractUser):
         verbose_name='биография'
     )
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'password']
+    REQUIRED_FIELDS = ('username', 'password')
 
     class Meta:
         ordering = ('id',)
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        return super().save(*args, **kwargs)
 
     def clean(self) -> None:
         if self.username == 'me':

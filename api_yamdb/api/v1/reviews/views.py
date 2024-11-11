@@ -1,13 +1,12 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import exceptions, filters
-from rest_framework import mixins, viewsets
+from rest_framework import exceptions, filters, mixins, viewsets
 
 from api.v1.reviews import serializers
-from api.v1.reviews.mixins import PatchModelMixin
 from api.v1.reviews.filters import TitleFilter
-from api.v1.reviews.permissions import IsAdmin, IsAuthor
+from api.v1.reviews.mixins import PatchModelMixin
+from api.permissions import IsAdmin, IsAuthor
 from reviews.models import Category, Genre, Review, Title
 
 
@@ -53,7 +52,6 @@ class TitleViewSet(
 ):
     """Вьюсет для создания и отображения объектов произведений."""
 
-    queryset = Title.objects.all()
     permission_classes = (IsAdmin,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter

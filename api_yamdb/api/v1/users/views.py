@@ -1,18 +1,16 @@
-
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework import (
-    filters, generics, permissions, response, status, views
-)
+from rest_framework import (filters, generics, permissions, response, status,
+                            views)
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.v1.users.uuids import generate_short_uuid, send_confirmation_code
+from api.permissions import OnlyAdmin
 from api.v1.users.mixins import NoPutAPIViewMixin
-from api.v1.users.permissions import AdminPermission
 from api.v1.users.serializers import (TokenObtainSerializer,
                                       UserRegistrationSerializer,
                                       UserSerializer)
+from api.v1.users.uuids import generate_short_uuid, send_confirmation_code
 from users.models import ConfirmationCode
 
 User = get_user_model()
@@ -73,7 +71,7 @@ class UserListCreate(generics.ListCreateAPIView):
     """Получение списка пользователей или их создание."""
 
     queryset = User.objects.all()
-    permission_classes = (AdminPermission,)
+    permission_classes = (OnlyAdmin,)
     serializer_class = UserSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=username',)
@@ -85,7 +83,7 @@ class UserRetrieveUpdateDestroy(
     """Получение, обновление или удаление пользователя."""
 
     queryset = User.objects.all()
-    permission_classes = (AdminPermission,)
+    permission_classes = (OnlyAdmin,)
     serializer_class = UserSerializer
 
     def get_object(self):

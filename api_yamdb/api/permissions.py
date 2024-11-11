@@ -4,6 +4,13 @@ from rest_framework.permissions import SAFE_METHODS, BasePermission
 User = get_user_model()
 
 
+class OnlyAdmin(BasePermission):
+    """Разрешение для доступа только для администраторов."""
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_admin
+
+
 class IsAdmin(BasePermission):
     """
     Разрешает доступ только администраторам или для безопасных методов.

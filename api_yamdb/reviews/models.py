@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from reviews.constants import NAME_LENGTH, LENGTH_TEXT
+from reviews.constants import (SHORT_TEXT, MAX_SCORE_VALUE, MIN_SCORE_VALUE,
+                               NAME_LENGTH)
 from reviews.validators import validate_year
 
 User = get_user_model()
@@ -27,7 +28,7 @@ class Category(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name[:LENGTH_TEXT]
+        return self.name[:SHORT_TEXT]
 
 
 class Genre(models.Model):
@@ -49,7 +50,7 @@ class Genre(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name[:LENGTH_TEXT]
+        return self.name[:SHORT_TEXT]
 
 
 class Title(models.Model):
@@ -87,7 +88,7 @@ class Title(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return self.name[:LENGTH_TEXT]
+        return self.name[:SHORT_TEXT]
 
 
 class Review(models.Model):
@@ -108,11 +109,11 @@ class Review(models.Model):
         'оценка',
         validators=(
             MinValueValidator(
-                1,
+                MIN_SCORE_VALUE,
                 message='Оценка должна быть не меньше 1'
             ),
             MaxValueValidator(
-                10,
+                MAX_SCORE_VALUE,
                 message='Оцена должна быть не больше 10'
             )
         ),
@@ -137,7 +138,7 @@ class Review(models.Model):
 
     def __str__(self):
         return (
-            f'{self.author.username}: {self.title.name[:LENGTH_TEXT]}'
+            f'{self.author.username}: {self.title.name[:SHORT_TEXT]}'
         )
 
 
@@ -170,5 +171,5 @@ class Comment(models.Model):
 
     def __str__(self):
         return (
-            f'{self.author.username}: {self.text[:LENGTH_TEXT]}'
+            f'{self.author.username}: {self.text[:SHORT_TEXT]}'
         )

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db.models import Avg
 
 from reviews.constants import LIST_PER_PAGE
-from reviews.models import Category, Genre, Title, Comment, Review
+from reviews.models import Category, Comment, Genre, Review, Title
 
 
 @admin.register(Category)
