@@ -12,10 +12,7 @@ from api.permissions import IsAdmin, IsAuthor
 from reviews.models import Category, Genre, Review, Title
 
 
-class CategoryViewSet(
-    ListCreateDestroyMixin,
-    viewsets.GenericViewSet
-):
+class CategoryViewSet(ListCreateDestroyMixin):
     """Вьюсет для работы с категориями."""
 
     permission_classes = (IsAdmin,)
@@ -26,10 +23,7 @@ class CategoryViewSet(
     lookup_field = 'slug'
 
 
-class GenreViewSet(
-    ListCreateDestroyMixin,
-    viewsets.GenericViewSet
-):
+class GenreViewSet(ListCreateDestroyMixin):
     """Вьюсет для работы с жанрами."""
 
     permission_classes = (IsAdmin,)
@@ -43,7 +37,6 @@ class GenreViewSet(
 class TitleViewSet(
     PatchModelMixin,
     ListRetrieveCreateDestroyMixin,
-    viewsets.GenericViewSet
 ):
     """Вьюсет для создания и отображения объектов произведений."""
 
@@ -66,7 +59,6 @@ class TitleViewSet(
 class ReviewViewSet(
     PatchModelMixin,
     ListRetrieveCreateDestroyMixin,
-    viewsets.GenericViewSet
 ):
     """Вьюсет для создания, обновления и получения отзывов."""
 
@@ -85,7 +77,6 @@ class ReviewViewSet(
 class CommentViewSet(
     PatchModelMixin,
     ListRetrieveCreateDestroyMixin,
-    viewsets.GenericViewSet
 ):
     """Вьюсет для создания, обновления и получения Comment."""
 
