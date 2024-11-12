@@ -4,6 +4,7 @@ from django.http import Http404
 from rest_framework import serializers, validators
 
 from api.v1.users.constants import EMAIL_LENGTH, USERNAME_LENGTH
+from .validators import username_validator
 from users.models import ConfirmationCode
 
 User = get_user_model()
@@ -16,15 +17,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         max_length=USERNAME_LENGTH,
         required=True,
-        validators=(
-            RegexValidator(
-                regex=r'^[\w.@+-]+\Z',
-                message=(
-                    'Имя пользователя может содержать'
-                    ' только буквы, цифры и @/./+/-/_.'
-                )
-            ),
-        )
+        validators=(username_validator,)
     )
 
     class Meta:
@@ -50,13 +43,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 'Пользователь с такой электронной почтой уже существует.'
             )
         return data
-
-    def validate_username(self, value):
-        if value.lower() == 'me':
-            raise serializers.ValidationError(
-                'Использование "me" в качестве имени пользователя запрещено.'
-            )
-        return value
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
