@@ -1,3 +1,4 @@
+from rest_framework.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -66,14 +67,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date')
 
-
-class ReviewCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания и обновления Review (POST, PATCH запросы)."""
-
-    class Meta:
-        model = Review
-        fields = ('text', 'score')
-
     def validate_score(self, value):
         if not (MIN_SCORE_VALUE <= value <= MAX_SCORE_VALUE):
             raise serializers.ValidationError('Оценка должна быть от 1 до 10.')
@@ -85,10 +78,7 @@ class ReviewCreateSerializer(serializers.ModelSerializer):
             Title,
             id=self.context['view'].kwargs['title_id']
         )
-        return super().create(validated_data)
-
-    def to_representation(self, instance):
-        return ReviewSerializer(instance, context=self.context).data
+        return super().create(validated_data)    
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -103,14 +93,6 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('id', 'text', 'author', 'pub_date')
 
-
-class CommentCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания и обновления Comment (POST, PATCH запросы)."""
-
-    class Meta:
-        model = Comment
-        fields = ('text',)
-
     def create(self, validated_data):
         validated_data['author'] = self.context.get('request').user
         validated_data['review'] = get_object_or_404(
@@ -118,6 +100,3 @@ class CommentCreateSerializer(serializers.ModelSerializer):
             id=self.context['view'].kwargs['review_id']
         )
         return super().create(validated_data)
-
-    def to_representation(self, instance):
-        return CommentSerializer(instance, context=self.context).data

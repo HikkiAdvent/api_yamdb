@@ -79,25 +79,22 @@ class ReviewViewSet(
     """Вьюсет для создания, обновления и получения отзывов."""
 
     permission_classes = (IsAuthor,)
+    serializer_class = serializers.ReviewSerializer
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         return title.reviews.all()
 
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return serializers.ReviewSerializer
-        return serializers.ReviewCreateSerializer
-
-    def create(self, request, *args, **kwargs):
+    def perform_create(self, serializer):
         if Review.objects.filter(
             title=self.kwargs['title_id'],
             author=self.request.user
         ).exists():
-            raise exceptions.ValidationError(
+            raise serializers.ValidationError(
                 'Вы уже оставили отзыв на это произведение.'
             )
-        return super().create(request, *args, **kwargs)
+        serializer.save(
+            author=self.request.user, title_id=self.kwargs['title_id'])
 
 
 class CommentViewSet(
@@ -111,12 +108,16 @@ class CommentViewSet(
     """Вьюсет для создания, обновления и получения Comment."""
 
     permission_classes = (IsAuthor,)
+    serializer_class = serializers.CommentSerializer
 
     def get_queryset(self):
-        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        review = get_object_or_404(
+            Review,
+            id=self.kwargs.get('review_id'),
+            title_id=self.kwargs.get('title_id')
+        )
         return review.comments.all()
 
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return serializers.CommentSerializer
-        return serializers.CommentCreateSerializer
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user, review_id=self.kwargs['review_id'])
