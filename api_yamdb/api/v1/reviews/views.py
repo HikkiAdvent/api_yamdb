@@ -8,7 +8,7 @@ from api.v1.reviews.filters import TitleFilter
 from api.v1.reviews.mixins import (ListCreateDestroyMixin,
                                    ListRetrieveCreateDestroyMixin,
                                    PatchModelMixin)
-from api.permissions import IsAdmin, IsAuthor
+from api_yamdb.api.v1.permissions import IsAdmin, IsAuthor
 from reviews.models import Category, Genre, Review, Title
 
 

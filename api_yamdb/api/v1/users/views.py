@@ -5,7 +5,7 @@ from rest_framework import (filters, generics, permissions, response, status,
                             views)
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.permissions import OnlyAdmin
+from api_yamdb.api.v1.permissions import OnlyAdmin
 from api.v1.users.mixins import NoPutAPIViewMixin
 from api.v1.users.serializers import (TokenObtainSerializer,
                                       UserRegistrationSerializer,
