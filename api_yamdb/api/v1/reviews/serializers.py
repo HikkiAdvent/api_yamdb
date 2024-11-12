@@ -1,4 +1,3 @@
-from rest_framework.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -71,6 +70,18 @@ class ReviewSerializer(serializers.ModelSerializer):
         if not (MIN_SCORE_VALUE <= value <= MAX_SCORE_VALUE):
             raise serializers.ValidationError('Оценка должна быть от 1 до 10.')
         return value
+
+    def validate(self, data):
+        """Проверяет, что у пользователя только один отзыв на произведение."""
+        request = self.context.get('request')
+        if request and request.method == 'POST':
+            title_id = self.context['view'].kwargs.get('title_id')
+            user = request.user
+            if Review.objects.filter(title_id=title_id, author=user).exists():
+                raise serializers.ValidationError(
+                    'Вы уже оставили отзыв на это произведение.'
+                )
+        return data
 
     def create(self, validated_data):
         validated_data['author'] = self.context.get('request').user

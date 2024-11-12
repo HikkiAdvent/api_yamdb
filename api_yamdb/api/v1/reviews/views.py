@@ -1,19 +1,19 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import exceptions, filters, mixins, viewsets
+from rest_framework import filters, viewsets
 
 from api.v1.reviews import serializers
 from api.v1.reviews.filters import TitleFilter
-from api.v1.reviews.mixins import PatchModelMixin
+from api.v1.reviews.mixins import (ListCreateDestroyMixin,
+                                   ListRetrieveCreateDestroyMixin,
+                                   PatchModelMixin)
 from api.permissions import IsAdmin, IsAuthor
 from reviews.models import Category, Genre, Review, Title
 
 
 class CategoryViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    ListCreateDestroyMixin,
     viewsets.GenericViewSet
 ):
     """Вьюсет для работы с категориями."""
@@ -27,9 +27,7 @@ class CategoryViewSet(
 
 
 class GenreViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    ListCreateDestroyMixin,
     viewsets.GenericViewSet
 ):
     """Вьюсет для работы с жанрами."""
@@ -44,10 +42,7 @@ class GenreViewSet(
 
 class TitleViewSet(
     PatchModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    ListRetrieveCreateDestroyMixin,
     viewsets.GenericViewSet
 ):
     """Вьюсет для создания и отображения объектов произведений."""
@@ -70,10 +65,7 @@ class TitleViewSet(
 
 class ReviewViewSet(
     PatchModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    ListRetrieveCreateDestroyMixin,
     viewsets.GenericViewSet
 ):
     """Вьюсет для создания, обновления и получения отзывов."""
@@ -86,23 +78,13 @@ class ReviewViewSet(
         return title.reviews.all()
 
     def perform_create(self, serializer):
-        if Review.objects.filter(
-            title=self.kwargs['title_id'],
-            author=self.request.user
-        ).exists():
-            raise serializers.ValidationError(
-                'Вы уже оставили отзыв на это произведение.'
-            )
         serializer.save(
             author=self.request.user, title_id=self.kwargs['title_id'])
 
 
 class CommentViewSet(
     PatchModelMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    ListRetrieveCreateDestroyMixin,
     viewsets.GenericViewSet
 ):
     """Вьюсет для создания, обновления и получения Comment."""

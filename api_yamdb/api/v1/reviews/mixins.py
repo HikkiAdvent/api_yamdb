@@ -1,4 +1,5 @@
 from rest_framework import response
+from rest_framework import mixins, viewsets
 
 
 class PatchModelMixin:
@@ -15,3 +16,30 @@ class PatchModelMixin:
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return response.Response(serializer.data)
+
+
+class ListCreateDestroyMixin(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    """
+    Базовый вьюсет с действиями для списка,
+    создания и удаления объектов.
+    """
+    pass
+
+
+class ListRetrieveCreateDestroyMixin(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    """
+    Базовый вьюсет с действиями для списка,
+    получения, обновления и удаления объектов.
+    """
+    pass
