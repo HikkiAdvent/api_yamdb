@@ -1,12 +1,11 @@
 from django.contrib.auth import get_user_model
-from rest_framework import (filters, permissions, response, status,
-                            views)
+from rest_framework import filters, permissions, response, status, views
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.v1.permissions import OnlyAdmin
 from api.v1 import mixins
+from api.v1.permissions import OnlyAdmin
 from api.v1.users.serializers import UserRegistrationSerializer, UserSerializer
-from api.v1.users.utils import send_confirmation_email, check_confirmation_code
+from api.v1.users.utils import check_confirmation_code, send_confirmation_email
 
 User = get_user_model()
 

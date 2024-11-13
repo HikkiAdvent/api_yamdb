@@ -1,5 +1,5 @@
 from django.db.models import prefetch_related_objects
-from rest_framework import mixins, viewsets, response
+from rest_framework import mixins, response, viewsets
 
 
 class PatchModelMixin:

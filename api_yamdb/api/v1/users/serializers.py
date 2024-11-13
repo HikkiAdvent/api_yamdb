@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers, validators
 
-from api.v1.users.constants import EMAIL_LENGTH, USERNAME_LENGTH
-from .validators import username_validator
-
+from api.v1.constants import EMAIL_LENGTH, USERNAME_LENGTH
+from api.v1.users.validators import username_validator
 
 User = get_user_model()
 
@@ -54,9 +53,10 @@ class UserSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'bio',
-            'role'
+            'role',
         )
 
-    def update(self, instance, validated_data):
-        validated_data.pop('role', None)
-        return super().update(instance, validated_data)
+    def save(self, **kwargs):
+        if self.instance:
+            kwargs['role'] = self.instance.role
+        return super().save(**kwargs)

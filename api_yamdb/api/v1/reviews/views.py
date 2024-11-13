@@ -3,12 +3,10 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
+from api.v1.mixins import CRUDMixin, ListCreateDestroyMixin
+from api.v1.permissions import IsAdmin, IsAuthor
 from api.v1.reviews import serializers
 from api.v1.reviews.filters import TitleFilter
-from api.v1.mixins import (
-    ListCreateDestroyMixin, CRUDMixin,
-)
-from api.v1.permissions import IsAdmin, IsAuthor
 from reviews.models import Category, Genre, Review, Title
 
 
