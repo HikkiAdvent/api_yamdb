@@ -1,41 +1,26 @@
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from rest_framework import (filters, permissions, response, status,
                             views)
 from rest_framework_simplejwt.tokens import AccessToken
 
 from api.v1.permissions import OnlyAdmin
 from api.v1 import mixins
-from api.v1.users.serializers import (TokenObtainSerializer,
-                                      UserRegistrationSerializer,
-                                      UserSerializer)
-from api.v1.users.uuids import generate_short_uuid, send_confirmation_code
-from users.models import ConfirmationCode
+from api.v1.users.serializers import UserRegistrationSerializer, UserSerializer
+from api.v1.users.utils import send_confirmation_email, check_confirmation_code
 
 User = get_user_model()
 
 
 class UserRegistrationView(views.APIView):
-    """Регистрация новых пользователей."""
+    """Регистрация пользователя и отправка кода подтверждения."""
 
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            user, created = User.objects.get_or_create(
-                username=serializer.validated_data['username'],
-                email=serializer.validated_data['email'],
-                defaults={'username': serializer.validated_data['username']}
-            )
-            code, _ = ConfirmationCode.objects.update_or_create(
-                user=user,
-                defaults={
-                    'code': generate_short_uuid(),
-                    'created_at': timezone.now()
-                }
-            )
-            send_confirmation_code(user, code.code)
+            user = serializer.save()
+            send_confirmation_email(user)
             return response.Response(
                 serializer.data,
                 status=status.HTTP_200_OK
@@ -47,21 +32,33 @@ class UserRegistrationView(views.APIView):
 
 
 class TokenObtainView(views.APIView):
-    """Получение токена по коду."""
+    """Получение JWT токена по коду подтверждения."""
 
     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, *args, **kwargs):
-        serializer = TokenObtainSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
+    def post(self, request):
+        username = request.data.get('username')
+        confirmation_code = request.data.get('confirmation_code')
+        if not (username and confirmation_code):
+            return response.Response(
+                {'error': 'Пользователь не найден.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return response.Response(
+                {'error': 'Пользователь не найден.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        if check_confirmation_code(user, confirmation_code):
             token = AccessToken.for_user(user)
             return response.Response(
                 {'token': str(token)},
                 status=status.HTTP_200_OK
             )
         return response.Response(
-            serializer.errors,
+            {'error': 'Неверный код подтверждения.'},
             status=status.HTTP_400_BAD_REQUEST
         )
 

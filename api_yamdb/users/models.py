@@ -10,7 +10,7 @@ class MyUser(AbstractUser):
     """Кастомный пользователь."""
 
     class Role(models.TextChoices):
-        """Список ролей пользователя с читаемыми названиями."""
+        """Список ролей пользователя."""
 
         USER = "user", _("User")
         MODERATOR = "moderator", _("Moderator")
@@ -31,6 +31,7 @@ class MyUser(AbstractUser):
         default='',
         verbose_name='биография'
     )
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'password')
 
@@ -57,25 +58,3 @@ class MyUser(AbstractUser):
             self.role == self.Role.ADMIN
             or self.is_superuser
         )
-
-
-class ConfirmationCode(models.Model):
-    """Код подтверждения."""
-
-    user = models.OneToOneField(
-        MyUser,
-        on_delete=models.CASCADE,
-        related_name='confirmation_code'
-    )
-    code = models.CharField(
-        max_length=8,
-        unique=True,
-        verbose_name='код'
-    )
-    created_at = models.DateTimeField(
-        'время создания',
-        auto_now_add=True
-    )
-
-    def __str__(self):
-        return f'Код подтверждения для {self.user.username}: {self.code}'
