@@ -1,12 +1,11 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from rest_framework import (filters, generics, permissions, response, status,
+from rest_framework import (filters, permissions, response, status,
                             views)
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api_yamdb.api.v1.permissions import OnlyAdmin
-from api.v1.users.mixins import NoPutAPIViewMixin
+from api.v1.permissions import OnlyAdmin
+from api.v1 import mixins
 from api.v1.users.serializers import (TokenObtainSerializer,
                                       UserRegistrationSerializer,
                                       UserSerializer)
@@ -67,7 +66,7 @@ class TokenObtainView(views.APIView):
         )
 
 
-class UserListCreate(generics.ListCreateAPIView):
+class UserListCreate(mixins.ListCreateMixin):
     """Получение списка пользователей или их создание."""
 
     queryset = User.objects.all()
@@ -77,21 +76,16 @@ class UserListCreate(generics.ListCreateAPIView):
     search_fields = ('=username',)
 
 
-class UserRetrieveUpdateDestroy(
-    NoPutAPIViewMixin, generics.RetrieveUpdateDestroyAPIView
-):
+class UserRetrieveUpdateDestroy(mixins.RetrieveUpdateDestroyMixin):
     """Получение, обновление или удаление пользователя."""
 
     queryset = User.objects.all()
     permission_classes = (OnlyAdmin,)
     serializer_class = UserSerializer
-
-    def get_object(self):
-        username = self.kwargs.get('username')
-        return get_object_or_404(User, username=username)
+    lookup_field = 'username'
 
 
-class UserRetrieveUpdate(NoPutAPIViewMixin, generics.RetrieveUpdateAPIView):
+class UserRetrieveUpdate(mixins.RetrieveUpdateMixin):
     """Получение или обновление своего аккаунта."""
 
     queryset = User.objects.all()
@@ -99,14 +93,3 @@ class UserRetrieveUpdate(NoPutAPIViewMixin, generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
-
-    def patch(self, request, *args, **kwargs):
-        user = self.get_object()
-        serializer = self.get_serializer(user, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return response.Response(serializer.data)
-        return response.Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )

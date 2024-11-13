@@ -5,16 +5,14 @@ User = get_user_model()
 
 
 class OnlyAdmin(BasePermission):
-    """Разрешение для доступа только для администраторов."""
+    """Разрешает доступ только для администраторов."""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_admin
 
 
 class IsAdmin(BasePermission):
-    """
-    Разрешает доступ только администраторам или для безопасных методов.
-    """
+    """Разрешает доступ администратору к небезопасным методам."""
 
     def has_permission(self, request, view):
         return (
@@ -30,10 +28,7 @@ class IsAdmin(BasePermission):
 
 
 class IsAuthor(BasePermission):
-    """
-    Разрешает доступ к редактированию только авторам, модераторам,
-    администратором или используется для безопасных методов.
-    """
+    """Доступ автору и персоналу к небезопасным методам."""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated or request.method in SAFE_METHODS

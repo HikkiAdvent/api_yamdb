@@ -8,13 +8,27 @@ auth = [
 ]
 
 users = [
-    path('me/', views.UserRetrieveUpdate.as_view(), name='me'),
+    path(
+        'me/',
+        views.UserRetrieveUpdate.as_view(
+            {'get': 'retrieve', 'patch': 'partial_update'}
+        ),
+        name='me'
+    ),
     path(
         '<username>/',
-        views.UserRetrieveUpdateDestroy.as_view(),
+        views.UserRetrieveUpdateDestroy.as_view(
+            {'get': 'retrieve', 'patch': 'partial_update', 'delete': 'destroy'}
+        ),
         name='user'
     ),
-    path('', views.UserListCreate.as_view(), name='users'),
+    path(
+        '',
+        views.UserListCreate.as_view(
+            {'get': 'list', 'post': 'create'}
+        ),
+        name='users'
+    ),
 ]
 
 urlpatterns = [

@@ -26,30 +26,49 @@ class PatchModelMixin:
         serializer.save()
 
 
-class ListCreateDestroyMixin(
+class ListCreateMixin(
     mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
+    viewsets.GenericViewSet,
 ):
-    """
-    Базовый вьюсет с действиями для списка,
-    создания и удаления объектов.
-    """
+    """Вьюсет для списков и создания объекта."""
+
+    pass
+
+
+class ListCreateDestroyMixin(
+    mixins.DestroyModelMixin,
+    ListCreateMixin,
+):
+    """Вьюсет с действиями для списка, создания и удаления объектов."""
 
     pass
 
 
 class CRUDMixin(
-    mixins.ListModelMixin,
+    PatchModelMixin,
     mixins.RetrieveModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    ListCreateDestroyMixin,
+):
+    """CRUD вьюсет без поддержки PUT метода."""
+
+    pass
+
+
+class RetrieveUpdateMixin(
+    PatchModelMixin,
+    mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
 ):
-    """
-    Базовый вьюсет с действиями для списка,
-    получения, обновления и удаления объектов.
-    """
+    """Вьюсет для управления своим аккаунтом."""
+
+    pass
+
+
+class RetrieveUpdateDestroyMixin(
+    mixins.DestroyModelMixin,
+    RetrieveUpdateMixin
+):
+    """Вьюсет для работы администратора с пользователем."""
 
     pass

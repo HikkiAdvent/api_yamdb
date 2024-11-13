@@ -27,18 +27,6 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Title для GET-запросов."""
 
-    genre = GenreSerializer(many=True)
-    category = CategorySerializer()
-    rating = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Title
-        fields = '__all__'
-
-
-class TitleCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания объектов Title (POST запрос)."""
-
     genre = serializers.SlugRelatedField(
         many=True,
         queryset=Genre.objects.all(),
@@ -48,10 +36,36 @@ class TitleCreateSerializer(serializers.ModelSerializer):
         queryset=Category.objects.all(),
         slug_field='slug'
     )
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
-        fields = '__all__'
+        fields = (
+            'id', 'name', 'year', 'description', 'genre', 'category', 'rating'
+        )
+
+    def create(self, validated_data):
+        genres_data = validated_data.pop('genre')
+        category = validated_data.pop('category')
+        title = Title.objects.create(category=category, **validated_data)
+        title.genre.set(genres_data)
+        return title
+
+    def update(self, instance, validated_data):
+        if 'genre' in validated_data:
+            genres_data = validated_data.pop('genre')
+            instance.genre.set(genres_data)
+        if 'category' in validated_data:
+            instance.category = validated_data.pop('category')
+        return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['genre'] = GenreSerializer(
+            instance.genre.all(), many=True
+        ).data
+        representation['category'] = CategorySerializer(instance.category).data
+        return representation
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -73,6 +87,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Проверяет, что у пользователя только один отзыв на произведение."""
+
         request = self.context.get('request')
         if request and request.method == 'POST':
             title_id = self.context['view'].kwargs.get('title_id')
@@ -89,7 +104,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             Title,
             id=self.context['view'].kwargs['title_id']
         )
-        return super().create(validated_data)    
+        return super().create(validated_data)
 
 
 class CommentSerializer(serializers.ModelSerializer):
