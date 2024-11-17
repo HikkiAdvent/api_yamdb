@@ -24,26 +24,26 @@ class GenreSerializer(serializers.ModelSerializer):
         exclude = ('id',)
 
 
-class TitleSerializer(serializers.ModelSerializer): 
+class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор объектов класса Title для GET-запросов."""
 
-    genre = GenreSerializer(many=True) 
-    category = CategorySerializer() 
-    rating = serializers.IntegerField(read_only=True) 
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
         fields = '__all__'
 
 
-class TitleCreateSerializer(serializers.ModelSerializer): 
+class TitleCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания объектов Title (POST запрос)."""
 
     genre = serializers.SlugRelatedField(
         many=True,
         queryset=Genre.objects.all(),
         slug_field='slug'
-    ) 
+    )
     category = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
         slug_field='slug'
