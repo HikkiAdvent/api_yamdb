@@ -1,5 +1,4 @@
 from django.db.models import Avg
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
@@ -7,7 +6,7 @@ from api.v1.mixins import CRUDMixin, ListCreateDestroyMixin
 from api.v1.permissions import IsAdmin, IsAuthor
 from api.v1.reviews import serializers, utils
 from api.v1.reviews.filters import TitleFilter
-from reviews.models import Category, Genre, Review, Title
+from reviews.models import Category, Genre, Title
 
 
 class CategoryViewSet(ListCreateDestroyMixin):
@@ -66,7 +65,8 @@ class ReviewViewSet(CRUDMixin):
 
     def perform_create(self, serializer):
         serializer.save(
-            author=self.request.user, title_id=self.kwargs['title_id']
+            author=self.request.user,
+            title=utils.get_title_or_review(self.kwargs['title_id'])
         )
 
 
@@ -85,5 +85,8 @@ class CommentViewSet(CRUDMixin):
     def perform_create(self, serializer):
         serializer.save(
             author=self.request.user,
-            review_id=self.kwargs['review_id']
+            review=utils.get_title_or_review(
+                self.kwargs['title_id'],
+                self.kwargs['review_id']
+            )
         )

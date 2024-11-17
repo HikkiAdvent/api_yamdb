@@ -84,14 +84,6 @@ class ReviewSerializer(serializers.ModelSerializer):
                 )
         return data
 
-    def create(self, validated_data):
-        validated_data['author'] = self.context.get('request').user
-        validated_data['title'] = get_object_or_404(
-            Title,
-            id=self.context['view'].kwargs['title_id']
-        )
-        return super().create(validated_data)
-
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для GET запросов к комментариям."""
@@ -104,11 +96,3 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'author', 'pub_date')
-
-    def create(self, validated_data):
-        validated_data['author'] = self.context.get('request').user
-        validated_data['review'] = get_object_or_404(
-            Review,
-            id=self.context['view'].kwargs['review_id']
-        )
-        return super().create(validated_data)
