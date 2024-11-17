@@ -24,48 +24,34 @@ class GenreSerializer(serializers.ModelSerializer):
         exclude = ('id',)
 
 
-class TitleSerializer(serializers.ModelSerializer):
+class TitleSerializer(serializers.ModelSerializer): 
     """Сериализатор объектов класса Title для GET-запросов."""
+
+    genre = GenreSerializer(many=True) 
+    category = CategorySerializer() 
+    rating = serializers.IntegerField(read_only=True) 
+
+    class Meta:
+        model = Title
+        fields = '__all__'
+
+
+class TitleCreateSerializer(serializers.ModelSerializer): 
+    """Сериализатор для создания объектов Title (POST запрос)."""
 
     genre = serializers.SlugRelatedField(
         many=True,
         queryset=Genre.objects.all(),
         slug_field='slug'
-    )
+    ) 
     category = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
         slug_field='slug'
     )
-    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
-        fields = (
-            'id', 'name', 'year', 'description', 'genre', 'category', 'rating'
-        )
-
-    def create(self, validated_data):
-        genres_data = validated_data.pop('genre')
-        category = validated_data.pop('category')
-        title = Title.objects.create(category=category, **validated_data)
-        title.genre.set(genres_data)
-        return title
-
-    def update(self, instance, validated_data):
-        if 'genre' in validated_data:
-            genres_data = validated_data.pop('genre')
-            instance.genre.set(genres_data)
-        if 'category' in validated_data:
-            instance.category = validated_data.pop('category')
-        return super().update(instance, validated_data)
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['genre'] = GenreSerializer(
-            instance.genre.all(), many=True
-        ).data
-        representation['category'] = CategorySerializer(instance.category).data
-        return representation
+        fields = '__all__'
 
 
 class ReviewSerializer(serializers.ModelSerializer):

@@ -46,6 +46,11 @@ class TitleViewSet(CRUDMixin):
             .order_by('id',)
         )
 
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return serializers.TitleSerializer
+        return serializers.TitleCreateSerializer
+
 
 class ReviewViewSet(CRUDMixin):
     """Вьюсет для создания, обновления и получения отзывов."""
