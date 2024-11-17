@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers, validators
 
 from api.v1.constants import EMAIL_LENGTH, USERNAME_LENGTH
+from api.v1.users.utils import check_confirmation_code
 from api.v1.users.validators import username_validator
 
 User = get_user_model()
@@ -55,8 +57,22 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'role',
         )
+    read_only_fields = ('role',)
 
-    def save(self, **kwargs):
-        if self.instance:
-            kwargs['role'] = self.instance.role
-        return super().save(**kwargs)
+
+class TokenObtainSerializer(serializers.Serializer):
+    """Сериализатор для получения JWT токена."""
+
+    username = serializers.CharField(max_length=150, required=True)
+    confirmation_code = serializers.CharField(max_length=8, required=True)
+
+    def validate(self, data):
+        username = data.get('username')
+        confirmation_code = data.get('confirmation_code')
+        user = get_object_or_404(User, username=username)
+        if not check_confirmation_code(user, confirmation_code):
+            raise serializers.ValidationError(
+                {'confirmation_code': 'Неверный код подтверждения.'}
+            )
+        data['user'] = user
+        return data

@@ -11,5 +11,6 @@ def username_validator(value):
     symbol_validator(value)
     if value.lower() == 'me':
         raise ValidationError(
-            'Использование "me" в качестве имени пользователя запрещено.')
+            'Использование "me" в качестве имени пользователя запрещено.'
+        )
     return value

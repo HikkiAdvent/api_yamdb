@@ -4,8 +4,10 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from api.v1 import mixins
 from api.v1.permissions import OnlyAdmin
-from api.v1.users.serializers import UserRegistrationSerializer, UserSerializer
-from api.v1.users.utils import check_confirmation_code, send_confirmation_email
+from api.v1.users.serializers import (
+    TokenObtainSerializer, UserRegistrationSerializer, UserSerializer
+)
+from api.v1.users.utils import send_confirmation_email
 
 User = get_user_model()
 
@@ -36,28 +38,16 @@ class TokenObtainView(views.APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        username = request.data.get('username')
-        confirmation_code = request.data.get('confirmation_code')
-        if not (username and confirmation_code):
-            return response.Response(
-                {'error': 'Пользователь не найден.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return response.Response(
-                {'error': 'Пользователь не найден.'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        if check_confirmation_code(user, confirmation_code):
+        serializer = TokenObtainSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
             token = AccessToken.for_user(user)
             return response.Response(
                 {'token': str(token)},
                 status=status.HTTP_200_OK
             )
         return response.Response(
-            {'error': 'Неверный код подтверждения.'},
+            serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -89,3 +79,6 @@ class UserRetrieveUpdate(mixins.RetrieveUpdateMixin):
 
     def get_object(self):
         return self.request.user
+
+    def perform_update(self, serializer):
+        serializer.save(role=self.get_object().role)

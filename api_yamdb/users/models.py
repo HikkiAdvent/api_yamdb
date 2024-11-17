@@ -48,7 +48,7 @@ class MyUser(AbstractUser):
     @property
     def is_moderator_or_admin(self) -> bool:
         return (
-            self.role in {self.Role.MODERATOR, self.Role.ADMIN}
+            self.role in (self.Role.MODERATOR, self.Role.ADMIN)
             or self.is_superuser
         )
 
